@@ -122,7 +122,8 @@ let match_coord c =
   |Hit-> failwith "RI doesn't hold"
   |Coord (x,y) -> (x,y)
 
-let get_all_cords (start_cord:coord) (end_cord:coord)  = (*TODO **)  [Coord (1,1); Coord (1,2); Coord (1,3)] 
+(* Given start coord and end coord, output a coord-list **)
+let get_all_cords (start_cord:coord) (end_cord:coord) : coord list  = (*TODO **)  [Coord (1,1); Coord (1,2); Coord (1,3)] 
 (*
   let my_coords = start_cord::[] in
     (* checks for ship > 25 pieces**)
