@@ -16,11 +16,11 @@ type player = {
 type t = player
 
 type valid_board = Valid of player | Invalid of string
-type 
+
 
   (** [alphabet] is the alphabet allowed for the y axis coordinates of the 
       game board. *)
-  let alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 (** [index c] is the 0-based index of [c] in the alphabet.
     Requires: [c] is an uppercase letter in A..Z. *)
@@ -245,7 +245,7 @@ let update_cell c =
 (** [check (c1, c2)] returns the new player with the coordinate (c1, c2) 
     updated to represent the player's guess. Returns the option of continue or loss
     TODO update this comment *)
-let check player (c1, c2) = 
+let check player (c1, c2) = failwith ("uniplemented") (*
   let b = player.board in
   let rec inner_loop acc row_pos col_pos row =
     match row with
@@ -267,4 +267,4 @@ let new_ships =
   let new_player = player with {board=new_board} in 
 if (all_sunk new_player)
 then Loss
-else Continue new_player
+else Continue new_player*)
