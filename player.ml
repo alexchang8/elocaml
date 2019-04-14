@@ -3,6 +3,12 @@ type cell = Empty|Ship|Miss|Hit|Sunk
 type board = cell list list
 type coord = Hit | Coord of int * int
 type ship = {sunk :bool ; size:int; inserted:bool; coords: coord list}
+(* type exc = Valid | Invalid  *)
+
+(* maybe wrap in valid | invalid  *)
+exception Diagonal_Ship
+exception Out_of_Bounds
+exception Invalid_Placement
 
 (** RI: Board shape can be no larger than 26 by 26 *)
 type player = {
@@ -70,7 +76,7 @@ let add_ship_to_board board coords =
         if List.mem (Coord (row_pos, col_pos)) coords
         then begin 
           if not (empty_cell h) 
-          then failwith "BLAH" (* TODO Add real exception *)
+          then raise Invalid_Placement (* TODO Add real exception *)
           else inner_loop (Ship::acc) row_pos (col_pos+1) t
         end
         else inner_loop (h::acc) row_pos (col_pos+1) t
@@ -83,7 +89,39 @@ let add_ship_to_board board coords =
       end
   in List.rev (outer_loop [] 1 board)
 
-let get_all_cords start_cord end_cord = (* TODO *)[Coord (1,1); Coord (1,2); Coord (1,3)]
+let match_coord c = 
+  match c with 
+  |Hit-> failwith "RI doesn't hold"
+  |Coord (x,y) -> (x,y)
+
+let get_all_cords (start_cord:coord) (end_cord:coord)  = (*TODO **)  [Coord (1,1); Coord (1,2); Coord (1,3)] 
+(*
+  let my_coords = start_cord::[] in
+    (* checks for ship > 25 pieces**)
+    if 
+    (start_cord |> match_coord |> fst > 25) || 
+    (start_cord |> match_coord |> snd > 25) ||
+    (end_cord |> match_coord |> fst > 25) || 
+    (end_cord |> match_coord |> snd > 25)
+    then raise Out_of_Bounds
+    (* TODO: check for a ship larger than length **)
+    else match (match_coord start_cord), (match_coord end_cord) with 
+      | (a1, b1), (a2, b2) when a1=a2 -> 
+        (* while b2 > b2 
+          add (a, b2) to acc
+          b2 = b2-1  *)         
+      | (a1, b1), (a2, b2) when b1=b2-> 
+      | (_,_), (_, _) -> raise Diagonal_Ship
+      **)
+
+
+(* let my_coords = start_cord::[] in  *)
+
+let exn_catcher exn = 
+  match exn with 
+  |Diagonal_Ship -> "Cannot place diagonal ship" 
+  |Out_of_Bounds -> "Ship must be within bounds"
+  |Invalid_Placement -> "Cannot place ships on top of each other"
 
 
 let insert_ship player start_cord end_cord = 
