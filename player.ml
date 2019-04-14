@@ -11,7 +11,7 @@ type player = {
   shape : int * int
 }
 
-type  t = player
+type t = player
 
 let alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -70,7 +70,7 @@ let add_ship_to_board board coords =
         if List.mem (Coord (row_pos, col_pos)) coords
         then begin 
           if not (empty_cell h) 
-          then failwith "BLAH" (* Add real exception *)
+          then failwith "BLAH" (* TODO Add real exception *)
           else inner_loop (Ship::acc) row_pos (col_pos+1) t
         end
         else inner_loop (h::acc) row_pos (col_pos+1) t
@@ -83,7 +83,8 @@ let add_ship_to_board board coords =
       end
   in List.rev (outer_loop [] 1 board)
 
-let get_all_cords start_cord end_cord = [Coord (1,1); Coord (1,2); Coord (1,3)]
+let get_all_cords start_cord end_cord = (* TODO *)[Coord (1,1); Coord (1,2); Coord (1,3)]
+
 
 let insert_ship player start_cord end_cord = 
   let cord_list = get_all_cords start_cord end_cord in
@@ -159,3 +160,16 @@ let print_board player =
         intermediate (row_acc+1) t
       end
   in intermediate 1 player.board
+
+(** [is_sunk s] returns whether ship [s] is sunk. A ship is considered sunk when
+    all of its coordinates have been hit. *)
+let is_sunk (s:ship) = 
+  let f acc b = acc && (b = Hit) in
+  List.fold_left f true s.coords
+
+(** [all_sunk p] returns whether all ships for player [p] are sunk. A ship is 
+    considered sunk when all of its coordinates have been hit. If every ship
+    that the player has is sunk then the player has lost the game. *)
+let all_sunk (p:player) = 
+  let f acc b = acc && (is_sunk b) in
+  List.fold_left f true p.ships
