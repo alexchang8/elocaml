@@ -15,12 +15,12 @@ type player = {
 
 type t = player
 
-type valid_board = Valid of player | Invalid of string
-type 
+type valid_board = Valid of t | Invalid of string
+type game_over = Continue of t | Loss
 
-  (** [alphabet] is the alphabet allowed for the y axis coordinates of the 
-      game board. *)
-  let alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+(** [alphabet] is the alphabet allowed for the y axis coordinates of the 
+    game board. *)
+let alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 (** [index c] is the 0-based index of [c] in the alphabet.
     Requires: [c] is an uppercase letter in A..Z. *)
@@ -59,7 +59,7 @@ let init_shape x y =
 (** [init_player x y name] initializes an new player containing an empty board 
     of size ([x], [y]), an empty ship array, and the board's shape ([x], [y]). 
 *)
-let init_player x y name = 
+let init_player x y name : t = 
   {
     board = init_empty_board x y;
     ships = [];
@@ -116,7 +116,7 @@ let get_all_cords start_cord end_cord = (* TODO *)[Coord (1,1); Coord (1,2); Coo
 (** [insert_ship player start_cord end_cord] inserts a ship given the starting
     and ending coordinates of the ship ([start_cord] and [end_cord]) to the
     current players board and returns an updated player. *)
-let insert_ship player start_cord end_cord size = 
+let insert_ship (player:t) start_cord end_cord size = 
   let cord_list = get_all_cords start_cord end_cord in
   if List.length cord_list <> size 
   then Invalid "Invalid size"
@@ -199,7 +199,7 @@ let temp_player = init_player 5 5
 
 (** [print_board player verbose] prints the board of the current [player]. If 
     [verbose] then the players ships will also be displayed. *)
-let print_board player verbose = 
+let print_board (player:t) verbose = 
   let shape = player.shape in
   let max_size = (snd shape) in (* change if we extend to unique boards *)
   let () = print_top_labels max_size in
@@ -216,12 +216,12 @@ let print_board player verbose =
 (** [print_my_board player] prints the board of the current [player] showing 
     them their own ships and which spots on the players board has been attacked.
 *)
-let print_my_board player = print_board player true
+let print_my_board (player:t) = print_board player true
 
 (** [print_opp_board player] prints the opposing players view of the current 
     [player]'s board. This view will hide the players ships from being printed. 
 *)
-let print_opp_board player = print_board player false
+let print_opp_board (player:t) = print_board player false
 
 (** [is_sunk s] returns whether ship [s] is sunk. A ship is considered sunk when
     all of its coordinates have been hit. *)
@@ -232,7 +232,7 @@ let is_sunk (s:ship) =
 (** [all_sunk p] returns whether all ships for player [p] are sunk. A ship is 
     considered sunk when all of its coordinates have been hit. If every ship
     that the player has is sunk then the player has lost the game. *)
-let all_sunk (p:player) = 
+let all_sunk (p:t) = 
   let f acc b = acc && (is_sunk b) in
   List.fold_left f true p.ships
 
@@ -245,26 +245,26 @@ let update_cell c =
 (** [check (c1, c2)] returns the new player with the coordinate (c1, c2) 
     updated to represent the player's guess. Returns the option of continue or loss
     TODO update this comment *)
-let check player (c1, c2) = 
+let check (player:t) (c1, c2) = 
   let b = player.board in
   let rec inner_loop acc row_pos col_pos row =
     match row with
     | [] -> acc
     | h::t -> if col_pos = c2 
       then update_cell h
-      else inner_loop (h::acc) row_pos (col_pos+1) t 
-let rec outer_loop acc row_pos b =
-  match b with
-  | [] -> acc
-  | h::t ->  
-    if h = c1 
-    then 
-      outer_loop (List.rev (inner_loop [] row_pos 1 h)::acc) (row_pos+1) t
-    else outer_loop (h::acc) (row_pos+1) t
-in 
-let new_board = List.rev (outer_loop [] 1 b) in
-let new_ships = 
-  let new_player = player with {board=new_board} in 
+      else inner_loop (h::acc) row_pos (col_pos+1) t  in
+  let rec outer_loop acc row_pos b =
+    match b with
+    | [] -> acc
+    | h::t ->  
+      if h = c1 
+      then 
+        outer_loop (List.rev (inner_loop [] row_pos 1 h)::acc) (row_pos+1) t
+      else outer_loop (h::acc) (row_pos+1) t
+  in 
+  let new_board = List.rev (outer_loop [] 1 b) in
+  let new_ships = 
+    let new_player = player with {board=new_board} in 
 if (all_sunk new_player)
 then Loss
-else Continue new_player
+else Continue(new_player)
