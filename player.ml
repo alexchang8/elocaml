@@ -4,18 +4,23 @@ type board = cell list list
 type coord = Hit | Coord of int * int
 type ship = {sunk :bool ; size:int; inserted:bool; coords: coord list}
 
+
 (** RI: Board shape can be no larger than 26 by 26 *)
 type player = {
   board : board;
   ships : ship list;
-  shape : int * int
+  shape : int * int;
+  name : int
 }
 
 type t = player
 
-(** [alphabet] is the alphabet allowed for the y axis coordinates of the 
-    game board. *)
-let alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+type valid_board = Valid of player | Invalid of string
+type 
+
+  (** [alphabet] is the alphabet allowed for the y axis coordinates of the 
+      game board. *)
+  let alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 (** [index c] is the 0-based index of [c] in the alphabet.
     Requires: [c] is an uppercase letter in A..Z. *)
@@ -51,13 +56,15 @@ let init_empty_board x y =
 let init_shape x y = 
   (x, y)
 
-(** [init_player x y] initializes an new player containing an empty board of
-    size ([x], [y]), an empty ship array, and the board's shape ([x], [y]). *)
-let init_player x y = 
+(** [init_player x y name] initializes an new player containing an empty board 
+    of size ([x], [y]), an empty ship array, and the board's shape ([x], [y]). 
+*)
+let init_player x y name = 
   {
     board = init_empty_board x y;
     ships = [];
-    shape = init_shape x y
+    shape = init_shape x y;
+    name = name
   }
 
 (** [add_ship ships coords] adds a new ship of coordinates [coords] to the 
@@ -109,15 +116,19 @@ let get_all_cords start_cord end_cord = (* TODO *)[Coord (1,1); Coord (1,2); Coo
 (** [insert_ship player start_cord end_cord] inserts a ship given the starting
     and ending coordinates of the ship ([start_cord] and [end_cord]) to the
     current players board and returns an updated player. *)
-let insert_ship player start_cord end_cord = 
+let insert_ship player start_cord end_cord size = 
   let cord_list = get_all_cords start_cord end_cord in
-  let new_ships = add_ship player.ships cord_list in
-  let new_board = add_ship_to_board player.board cord_list in
-  {
-    board=new_board;
-    ships=new_ships;
-    shape=player.shape
-  }
+  if List.length cord_list <> size 
+  then Invalid "Invalid size"
+  else
+    let new_ships = add_ship player.ships cord_list in
+    let new_board = add_ship_to_board player.board cord_list in
+    Valid {
+      board=new_board;
+      ships=new_ships;
+      shape=player.shape;
+      name=player.name
+    }
 
 (** [cell_spacing] is a constant representing the space between cells on a
     gameboard. Incorporated to display the game to the user. *)
@@ -224,3 +235,36 @@ let is_sunk (s:ship) =
 let all_sunk (p:player) = 
   let f acc b = acc && (is_sunk b) in
   List.fold_left f true p.ships
+
+let update_cell c = 
+  match c with
+  | Empty -> Miss
+  | Ship -> Hit
+  | _ -> failwith "RI does not hold"
+
+(** [check (c1, c2)] returns the new player with the coordinate (c1, c2) 
+    updated to represent the player's guess. Returns the option of continue or loss
+    TODO update this comment *)
+let check player (c1, c2) = 
+  let b = player.board in
+  let rec inner_loop acc row_pos col_pos row =
+    match row with
+    | [] -> acc
+    | h::t -> if col_pos = c2 
+      then update_cell h
+      else inner_loop (h::acc) row_pos (col_pos+1) t 
+let rec outer_loop acc row_pos b =
+  match b with
+  | [] -> acc
+  | h::t ->  
+    if h = c1 
+    then 
+      outer_loop (List.rev (inner_loop [] row_pos 1 h)::acc) (row_pos+1) t
+    else outer_loop (h::acc) (row_pos+1) t
+in 
+let new_board = List.rev (outer_loop [] 1 b) in
+let new_ships = 
+  let new_player = player with {board=new_board} in 
+if (all_sunk new_player)
+then Loss
+else Continue new_player
