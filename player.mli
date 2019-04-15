@@ -1,0 +1,3 @@
+exception Diagonal_Ship
+exception Out_of_Bounds
+exception Invalid_Placement
