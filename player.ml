@@ -3,7 +3,7 @@ type cell = Empty|Ship|Miss|Hit|Sunk
 type board = cell list list
 type coord = Hit of int * int | Coord of int * int
 type ship = {sunk :bool ; size:int; inserted:bool; coords: coord list}
-(* type exc = Valid | Invalid  *)
+(* type exc = Valid of coord list | Invalid of string *)
 
 (* maybe wrap in valid | invalid  *)
 exception Diagonal_Ship
@@ -123,34 +123,45 @@ let match_coord c =
   | Coord (x,y) -> (x,y)
 
 (* Given start coord and end coord, output a coord-list **)
-let get_all_cords (start_cord:coord) (end_cord:coord) : coord list  = (*TODO **)  [Coord (1,1); Coord (1,2); Coord (1,3)] 
-(*
-  let my_coords = start_cord::[] in
-    (* checks for ship > 25 pieces**)
-    if 
+let get_all_cords (start_cord:coord) (end_cord:coord) : coord list  = (*TODO   [Coord (1,1); Coord (1,2); Coord (1,3)] *)
+
+  (* let my_coords = start_cord::[] in *)
+  (* checks for ship > 25 pieces**)
+  if 
     (start_cord |> match_coord |> fst > 25) || 
     (start_cord |> match_coord |> snd > 25) ||
     (end_cord |> match_coord |> fst > 25) || 
     (end_cord |> match_coord |> snd > 25)
-    then raise Out_of_Bounds
-    (* TODO: check for a ship larger than length **)
-    else match (match_coord start_cord), (match_coord end_cord) with 
-      | (a1, b1), (a2, b2) when a1=a2 -> 
-        (* while b2 > b2 
-          add (a, b2) to acc
-          b2 = b2-1  *)         
-      | (a1, b1), (a2, b2) when b1=b2-> 
-      | (_,_), (_, _) -> raise Diagonal_Ship
-      **)
+  then raise Out_of_Bounds
+  (* TODO: check for a ship larger than length **)
+  else match (match_coord start_cord), (match_coord end_cord) with 
+    | (a1, b1), (a2, b2) when a1=a2 -> begin 
+        (* let print = print_endline("here") in  *)
+        let rec mid_coords (b1:int) (b2:int) (acc:coord list) : coord list = 
+          if b2 >= b1 then let new_acc = Coord (a1, b2)::acc in
+            mid_coords b1 (b2-1) new_acc
+          else acc in mid_coords (snd (a1, b1)) (snd (a2, b2)) []
+      end 
+    (* while b2 > b1
+       add (a, b2) to acc
+       b2 = b2-1  *)         
+    | (a1, b1), (a2, b2) when b1=b2-> begin
+        let rec midd_coords a1 a2 acc = 
+          if a2 >= a1 then let new_acc = Coord ((a2-1),b1)::acc in
+            midd_coords a1 (a2-1) new_acc
+          else acc in midd_coords (fst (a1, b1)) (fst (a2, b2)) [] end
+    | (_,_), (_, _) -> raise Diagonal_Ship
+
+
 
 
 (* let my_coords = start_cord::[] in  *)
 
-let exn_catcher exn = 
-  match exn with 
-  |Diagonal_Ship -> "Cannot place diagonal ship" 
-  |Out_of_Bounds -> "Ship must be within bounds"
-  |Invalid_Placement -> "Cannot place ships on top of each other"
+(* let exn_catcher exn = 
+   match exn with 
+   |Diagonal_Ship -> "Cannot place diagonal ship" 
+   |Out_of_Bounds -> "Ship must be within bounds"
+   |Invalid_Placement -> "Cannot place ships on top of each other" *)
 
 (** [insert_ship player start_cord end_cord] inserts a ship given the starting
     and ending coordinates of the ship ([start_cord] and [end_cord]) to the
