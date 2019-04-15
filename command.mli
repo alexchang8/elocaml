@@ -3,4 +3,4 @@ type command =
   | Check of (int*int)
   | Invalid
   | Quit
-
+val parse : string -> command

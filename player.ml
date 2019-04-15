@@ -16,8 +16,8 @@ type player = {
 type t = player
 
 
-type valid_board = Valid of t | Invalid of string
-type game_over = Continue of t | Loss
+type valid_board = ValidB of t | InvalidB of string
+type game_over = Continue of t | Loss of string
 
 (** [alphabet] is the alphabet allowed for the y axis coordinates of the 
     game board. *)
@@ -120,11 +120,11 @@ let get_all_cords start_cord end_cord = (* TODO *)[Coord (1,1); Coord (1,2); Coo
 let insert_ship (player:t) start_cord end_cord size = 
   let cord_list = get_all_cords start_cord end_cord in
   if List.length cord_list <> size 
-  then Invalid "Invalid size"
+  then InvalidB "Invalid size"
   else
     let new_ships = add_ship player.ships cord_list in
     let new_board = add_ship_to_board player.board cord_list in
-    Valid {
+    ValidB {
       board=new_board;
       ships=new_ships;
       shape=player.shape;
@@ -248,7 +248,7 @@ let update_cell c =
     TODO update this comment *)
 
 let check (player:t) (c1, c2) = 
-  let b = player.board in
+  failwith("uniplemented")(*let b = player.board in
   let rec inner_loop acc row_pos col_pos row =
     match row with
     | [] -> acc
@@ -269,4 +269,4 @@ let check (player:t) (c1, c2) =
     let new_player = player with {board=new_board} in 
 if (all_sunk new_player)
 then Loss
-else Continue new_player
+else Continue new_player*)

@@ -1,8 +1,10 @@
-open state
+open State
+open Command
 let rec play_game state =
+  print_endline ("test");
   let input = read_line () in
-  let command = parse input in
-  let new_state = State.update command state in
+  let command = Command.parse input in
+  let new_state = State.update state command in
   match new_state with 
   |Valid(v) -> play_game v
   |Invalid(c) -> let () = print_endline (c) in play_game state
