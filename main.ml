@@ -1,7 +1,6 @@
 open State
 open Command
 let rec play_game state =
-  print_endline ("test");
   let input = read_line () in
   let command = Command.parse input in
   let new_state = State.update state command in
@@ -21,5 +20,9 @@ let rec play_game state =
 
 
 let main () =
+  let () = print_endline "Welcome to Battleship!" in
   let state = State.init in
   play_game state
+
+
+let () = main ()

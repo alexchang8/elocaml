@@ -12,15 +12,16 @@ type command =
 exception Empty
 
 exception Malformed
-let check_string_form target = 
+let check_string_form target =
+	 
 	 String.length (target) = 2 && 
-	let first = int_of_char (String.get target 1)  in (64 < first && first < 90 ) && 
-	let second = int_of_string (String.sub target 1 2) in (1 < second && second < 26) 
+	let first = int_of_char (String.get target 0) in (64 < first && first <= 90 ) && 
+	let second = int_of_string (String.sub target 1 1) in (1 <= second && second <= 26) 
 let check_list_form t =
 	if List.length t = 1 then 
 	let target = (List.hd t) in check_string_form target
 	else if List.length t = 2 then
-		let target1 = List.hd t in let target2 = List.nth t 1 in check_string_form target1 && check_string_form target2
+		let target1 = List.hd t in let target2 = List.nth t 1 in let () = print_endline (string_of_bool (check_string_form target1)) in check_string_form target1  && check_string_form target2
 	else false
 		
 
@@ -32,13 +33,13 @@ let parse (str : string) :  command =
 	else let strarray = String.split_on_char ' ' str in
 		match strarray with
 			|[] -> Invalid
-			|h::t ->  if List.length t >= 1 then
+			|h::t ->  if List.length t >= 1 then 
 					if h = "quit" then Quit 
 					else if h = "check" then 
-						if check_list_form t then let test = List.hd t in Check(int_of_char (String.get test 0), int_of_string (String.sub test 1 2)) 
+						if check_list_form t then let test = List.hd t in Check(int_of_char (String.get test 0), int_of_string (String.sub test 1 1)) 
 						else Invalid
-			 	else if h = "place" then 
-					if check_list_form t then let test1 = (List.hd t) in let test2 = (List.nth t 1) in Place((int_of_char (String.get test1 0) - 64, int_of_string (String.sub test1 1 2)), (int_of_char (String.get test2 0) - 64, int_of_string (String.sub test2 1 2))) 
+			 	else if h = "place" then
+					if check_list_form t then let test1 = (List.hd t) in let test2 = (List.nth t 1) in Place((int_of_char (String.get test1 0) - 64, int_of_string (String.sub test1 1 1)), (int_of_char (String.get test2 0) - 64, int_of_string (String.sub test2 1 1))) 
 					else Invalid 
 				else Invalid
 				else Invalid
