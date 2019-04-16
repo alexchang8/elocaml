@@ -1,8 +1,8 @@
-
+open Game
 (**TODO: decide a structure for clients*)
-module type Client = sig
+(*module type Client = sig
 
-end
+  end*)
 
 module type Server = sig
   (**Runs the server for a game. The server accepts socket connections
@@ -10,7 +10,5 @@ module type Server = sig
   val run : unit -> unit
 end
 
-module type MakeServer =
-  functor (G : Game) -> Server
-
+module MakeServer : functor (G:Game) -> Server
 (**TODO: functor to make client*)
