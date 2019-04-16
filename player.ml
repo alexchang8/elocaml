@@ -3,7 +3,9 @@ type cell = Empty|Ship|Miss|Hit|Sunk
 type board = cell list list
 type coord = Hit of int * int | Coord of int * int
 type ship = {sunk :bool ; size:int; inserted:bool; coords: coord list}
-type exc = Valid of coord list | Invalid of string
+(* type exc = Valid of coord list | Invalid of string *)
+(* type valid_coords = ValidC of coord list | InvalidC of string
+   type diag_ship = ValidD of coord list | InvalidD of string *)
 
 exception Diagonal_Ship
 exception Out_of_Bounds
@@ -105,7 +107,7 @@ let add_ship_to_board board coords =
         if List.mem (Coord (row_pos, col_pos)) coords
         then begin 
           if not (empty_cell h) 
-          then raise Invalid_Placement (* TODO Add real exception *)
+          then raise Invalid_Placement 
           else inner_loop (Ship::acc) row_pos (col_pos+1) t
         end
         else inner_loop (h::acc) row_pos (col_pos+1) t
@@ -118,6 +120,8 @@ let add_ship_to_board board coords =
       end
   in List.rev (outer_loop [] 1 board)
 
+(**[match_ coord c] is a helper function that extracts the tuple of coordinates 
+   from type coord *)
 let match_coord c = 
   match c with 
   | Hit _ -> failwith "RI doesn't hold"
@@ -127,7 +131,7 @@ let match_coord c =
    based on a ship's start and end coordinates.
    Raises [Out_of_Bounds] if user creates a ship bigger than the board
    Raises [Diagonal_Ship] if user creates a diagonal ship **)
-let get_all_cords (start_cord:coord) (end_cord:coord) : coord list  = 
+let get_all_cords (start_cord:coord) (end_cord:coord)  = 
   if 
     (start_cord |> match_coord |> fst > 25) || 
     (start_cord |> match_coord |> snd > 25) ||
@@ -143,7 +147,7 @@ let get_all_cords (start_cord:coord) (end_cord:coord) : coord list  =
       end       
     | (a1, b1), (a2, b2) when b1=b2-> begin
         let rec midd_coords a1 a2 acc = 
-          if a2 >= a1 then let new_acc = Coord ((a2-1),b1)::acc in
+          if a2 >= a1 then let new_acc = Coord (a2, b1)::acc in
             midd_coords a1 (a2-1) new_acc
           else acc in midd_coords (fst (a1, b1)) (fst (a2, b2)) [] end
     | (_,_), (_, _) -> raise Diagonal_Ship
