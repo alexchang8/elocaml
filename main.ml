@@ -8,7 +8,7 @@ let rec play_game state =
   match new_state with 
   |Valid(v) -> play_game v
   |Invalid(c) -> let () = print_endline (c) in play_game state
-  |Loss(c) -> print_endline("state")
+  |Loss(c) -> print_endline(c)
   |Quit -> print_endline("bye")
 
 
