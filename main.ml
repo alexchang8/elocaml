@@ -20,7 +20,7 @@ let rec play_game state =
 
 
 let main () =
-  let () = print_endline "Welcome to Battleship!" in
+  let () = print_endline "Welcome to Battleship! \n Each player has three ships of size 2, 3 and 4. \n Place ships and then start guessing!" in
   let state = State.init in
   play_game state
 
