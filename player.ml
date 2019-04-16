@@ -143,7 +143,7 @@ let get_all_cords (start_cord:coord) (end_cord:coord) : coord list  =
       end       
     | (a1, b1), (a2, b2) when b1=b2-> begin
         let rec midd_coords a1 a2 acc = 
-          if a2 >= a1 then let new_acc = Coord ((a2-1),b1)::acc in
+          if a2 >= a1 then let new_acc = Coord (a2, b1)::acc in
             midd_coords a1 (a2-1) new_acc
           else acc in midd_coords (fst (a1, b1)) (fst (a2, b2)) [] end
     | (_,_), (_, _) -> raise Diagonal_Ship
