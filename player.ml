@@ -118,6 +118,8 @@ let add_ship_to_board board coords =
       end
   in List.rev (outer_loop [] 1 board)
 
+(**[match_ coord] is a helper function that extracts the tuple of coordinates 
+   from type coord *)
 let match_coord c = 
   match c with 
   | Hit _ -> failwith "RI doesn't hold"
