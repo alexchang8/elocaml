@@ -5,6 +5,10 @@ module type Game = sig
   (**The abstract type representing a parsed player input*)
   type command
 
+  val init_state : t
+
+  val max_players : int
+
   (**[next_state t c] is the game state after [c] is applied.*)
   val next_state : t -> command -> t
 
