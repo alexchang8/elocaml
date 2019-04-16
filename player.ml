@@ -1,8 +1,13 @@
 
 type cell = Empty|Ship|Miss|Hit|Sunk
 type board = cell list list
-type coord = Hit | Coord of int * int
+type coord = Hit of int * int | Coord of int * int
 type ship = {sunk :bool ; size:int; inserted:bool; coords: coord list}
+type exc = Valid of coord list | Invalid of string
+
+exception Diagonal_Ship
+exception Out_of_Bounds
+exception Invalid_Placement
 
 
 (** RI: Board shape can be no larger than 26 by 26 *)
@@ -22,6 +27,7 @@ type game_over = Continue of t | Loss of string
 (** [alphabet] is the alphabet allowed for the y axis coordinates of the 
     game board. *)
 let alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let make_coord (a, b) = Coord((a, b))
 
 (** [index c] is the 0-based index of [c] in the alphabet.
     Requires: [c] is an uppercase letter in A..Z. *)
@@ -99,7 +105,7 @@ let add_ship_to_board board coords =
         if List.mem (Coord (row_pos, col_pos)) coords
         then begin 
           if not (empty_cell h) 
-          then failwith "BLAH" (* TODO Add real exception *)
+          then raise Invalid_Placement (* TODO Add real exception *)
           else inner_loop (Ship::acc) row_pos (col_pos+1) t
         end
         else inner_loop (h::acc) row_pos (col_pos+1) t
@@ -112,7 +118,36 @@ let add_ship_to_board board coords =
       end
   in List.rev (outer_loop [] 1 board)
 
-let get_all_cords start_cord end_cord = (* TODO *)[Coord (1,1); Coord (1,2); Coord (1,3)]
+let match_coord c = 
+  match c with 
+  | Hit _ -> failwith "RI doesn't hold"
+  | Coord (x,y) -> (x,y)
+
+(* [get_all_cords start_cord end_cord] outputs the coordinate list of a ship
+   based on a ship's start and end coordinates.
+   Raises [Out_of_Bounds] if user creates a ship bigger than the board
+   Raises [Diagonal_Ship] if user creates a diagonal ship **)
+let get_all_cords (start_cord:coord) (end_cord:coord) : coord list  = 
+  if 
+    (start_cord |> match_coord |> fst > 25) || 
+    (start_cord |> match_coord |> snd > 25) ||
+    (end_cord |> match_coord |> fst > 25) || 
+    (end_cord |> match_coord |> snd > 25)
+  then raise Out_of_Bounds
+  else match (match_coord start_cord), (match_coord end_cord) with 
+    | (a1, b1), (a2, b2) when a1=a2 -> begin 
+        let rec mid_coords (b1:int) (b2:int) (acc:coord list) : coord list = 
+          if b2 >= b1 then let new_acc = Coord (a1, b2)::acc in
+            mid_coords b1 (b2-1) new_acc
+          else acc in mid_coords (snd (a1, b1)) (snd (a2, b2)) []
+      end       
+    | (a1, b1), (a2, b2) when b1=b2-> begin
+        let rec midd_coords a1 a2 acc = 
+          if a2 >= a1 then let new_acc = Coord ((a2-1),b1)::acc in
+            midd_coords a1 (a2-1) new_acc
+          else acc in midd_coords (fst (a1, b1)) (fst (a2, b2)) [] end
+    | (_,_), (_, _) -> raise Diagonal_Ship
+
 
 (** [insert_ship player start_cord end_cord] inserts a ship given the starting
     and ending coordinates of the ship ([start_cord] and [end_cord]) to the
@@ -149,16 +184,22 @@ let get_dash_space () =
     space. Incorporated to display the game to the user. *)
 let dash_space = get_dash_space ()
 
+let miss_val = "0"
+let hit_val = "X"
+let sunk_val = "Z"
+let empty_val = " "
+let ship_val = "S"
+
 (** [parse_cell c verbose] gives the string representation of the cell [c]. 
     If [verbose] is true then ships are displayed. Otherwise, they are skipped
     over and given the empty space. *)
 let parse_cell c verbose = 
   match c with
-  | Empty -> " "
-  | Ship -> if verbose then "S" else " "
-  | Miss -> "0"
-  | Hit ->  "X"
-  | Sunk -> "Z"
+  | Empty -> empty_val
+  | Ship -> if verbose then ship_val else empty_val
+  | Miss -> miss_val
+  | Hit ->  hit_val
+  | Sunk -> sunk_val
 
 (** [get_row row_acc row verbose] computes the string representation of [row]. 
     Prepends the current row label to the row and spaces each cell by
@@ -196,7 +237,7 @@ let print_top_labels s =
     else print_endline cell_spacing
   in helper 1 s
 
-let temp_player = init_player 5 5
+let temp_player = init_player 5 5 1
 
 (** [print_board player verbose] prints the board of the current [player]. If 
     [verbose] then the players ships will also be displayed. *)
@@ -224,49 +265,153 @@ let print_my_board (player:t) = print_board player true
 *)
 let print_opp_board (player:t) = print_board player false
 
+(** [is_hit c] returns true if the coordinate [c] is a hit. *)
+let is_hit c = 
+  match c with 
+  | Hit _ -> true
+  | Coord _ -> false
+
 (** [is_sunk s] returns whether ship [s] is sunk. A ship is considered sunk when
     all of its coordinates have been hit. *)
-let is_sunk (s:ship) = 
-  let f acc b = acc && (b = Hit) in
-  List.fold_left f true s.coords
+let is_sunk (coords:coord list) = 
+  let f acc b = acc && (is_hit b) in
+  List.fold_left f true coords
 
-(** [all_sunk p] returns whether all ships for player [p] are sunk. A ship is 
+(** [all_sunk s] returns whether all ships in [s] are sunk. A ship is 
     considered sunk when all of its coordinates have been hit. If every ship
-    that the player has is sunk then the player has lost the game. *)
-let all_sunk (p:t) = 
-  let f acc b = acc && (is_sunk b) in
-  List.fold_left f true p.ships
+    is sunk then the player has lost the game. *)
+let all_sunk (s:ship list) = 
+  let f acc b = acc && (is_sunk b.coords) in
+  List.fold_left f true s
 
-let update_cell c = 
-  match c with
-  | Empty -> Miss
-  | Ship -> Hit
-  | _ -> failwith "RI does not hold"
+(** [already_guessed board (c1, c2)] is the function that determines if cell
+    [(c1, c2)] has previously been guessed by a user. A cell has not been
+    guessed if its value is Empty or a Ship. *)
+let already_guessed player (c1, c2) : bool =
+  let board = player.board in
+  let rec inner_loop row col_pos   = 
+    match row with 
+    | [] -> false
+    | h::t -> if col_pos = c2 
+      then match h with
+        | Empty | Ship -> false
+        | Sunk | Hit | Miss -> true
+      else inner_loop t (col_pos+1)
+  in 
+  let rec outer_loop b row_pos =
+    match b with 
+    | [] -> false
+    | h::t -> if row_pos = c1
+      then inner_loop h 1
+      else outer_loop t (row_pos+1)
+  in outer_loop board 1
+
+(** [update_ships ships (c1, c2)] updates a ship list [ships] according to the
+    guess (c1, c2). If a ship in the list has been hit, then it gets updated
+    and if a ship has not been hit, then there are no changes to the ship list.
+    Returns: tuple of the updated ship list and a list of coordinates to 
+      update on the game board. 
+    Requires: (c1, c2) has not previously been guessed. *)
+let update_ships (ships:ship list) (c1, c2) = 
+  let rec loop_ships acc ships update_coords update_val = 
+    match ships with
+    | [] -> acc, update_coords, update_val
+    | h::t ->  
+      if List.mem (Coord (c1, c2)) h.coords
+      then begin
+        let rec update_ship acc ship_coords = 
+          match ship_coords with
+          | [] -> acc
+          | h::t -> if h = (Coord (c1, c2))
+            then update_ship ((Hit (c1, c2)::acc)) t
+            else update_ship (h::acc) t
+        in 
+        let new_coords = update_ship [] h.coords in 
+        let sunk = is_sunk new_coords in
+        let new_ship = 
+          {sunk=sunk; size=h.size; inserted=h.inserted; coords=new_coords} in
+        let update = if sunk then new_coords else [Hit (c1, c2)] in
+        let up_val = if sunk then Sunk else Hit in
+        loop_ships (new_ship::acc) t update up_val
+      end
+      else loop_ships (h::acc) t update_coords update_val
+  in loop_ships [] ships [Hit (c1, c2)] Miss (* gross to initialize the update coordinate to a Hit but will work for now. *)
+
+(** [update_board board update_coords v] computes a new board with all instances
+    of update_coords replaced with the cell value [v] on the current board 
+    [board]. *)
+let update_board board update_coords v : board = 
+  let rec loop_rows acc row_pos b =
+    match b with
+    | [] -> List.rev acc
+    | h::t -> begin 
+        let rec loop_row row_acc row_pos col_pos r = 
+          match r with
+          | [] -> List.rev row_acc
+          | h::t -> if List.mem (Hit (row_pos, col_pos)) update_coords
+            then loop_row (v::row_acc) row_pos (col_pos+1) t
+            else loop_row (h::row_acc) row_pos (col_pos+1) t
+        in let new_row = loop_row [] row_pos 1 h in
+        loop_rows (new_row::acc) (row_pos+1) t
+      end
+  in loop_rows [] 1 board
 
 (** [check (c1, c2)] returns the new player with the coordinate (c1, c2) 
-    updated to represent the player's guess. Returns the option of continue or loss
+    updated to represent the player's guess. 
+    Requires: Cell (c1, c2) has not previously been guessed
+    Returns the option of continue or loss
     TODO update this comment *)
 
-let check (player:t) (c1, c2) = 
-  failwith("uniplemented")(*let b = player.board in
-  let rec inner_loop acc row_pos col_pos row =
-    match row with
-    | [] -> acc
-    | h::t -> if col_pos = c2 
-      then update_cell h
-      else inner_loop (h::acc) row_pos (col_pos+1) t  in
-  let rec outer_loop acc row_pos b =
-    match b with
-    | [] -> acc
-    | h::t ->  
-      if h = c1 
-      then 
-        outer_loop (List.rev (inner_loop [] row_pos 1 h)::acc) (row_pos+1) t
-      else outer_loop (h::acc) (row_pos+1) t
-  in 
-  let new_board = List.rev (outer_loop [] 1 b) in
-  let new_ships = 
-    let new_player = player with {board=new_board} in 
-if (all_sunk new_player)
-then Loss
-else Continue new_player*)
+let check (p:t) (c1, c2) = 
+  (* 
+    Sudo Code:
+    Loop through the players ships:
+      If no ship is hit
+      then iterate over the board and change cell (c1, c2) to a miss
+      else --> a ship is hit, then update the players ships.
+        If the ship that just got hit is sunk
+        then Update all cells on board to sunk
+          If all ships are sunk
+          then the game is over return Loss
+          else return the player with updated ships and board
+        else Update cell (c1, c2) to hit 
+            and return player with updated ships and board
+  *)
+  let (new_ships, update_coords, v) = update_ships p.ships (c1, c2) in
+  let over = all_sunk new_ships in
+  if over 
+  then Loss("you lost")
+  else begin
+    if v = Miss (* Print the player missed and update the board *)
+    then print_endline "Miss!"
+    else if v = Hit then print_endline "Hit!"
+    else print_endline "Hit! You sunk their ship!"; (* Ship must be sunk *)
+    let new_board = update_board p.board update_coords v in
+    Continue 
+      ({
+        board=new_board;
+        ships=new_ships;
+        shape=p.shape;
+        name=p.name
+      })
+  end
+
+(* If running in utop, uncomment lines below to see the functionality. 
+    You can run print_my_board hit1 to print the board after the player
+    has missed once and hit once.
+*)
+(* let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
+
+   let new_p = match res with | Valid p -> p | _ -> failwith "";;
+
+   let miss1 = match (check new_p (3, 3)) with | Continue p -> p | _ -> failwith "";;
+
+   print_my_board miss1;;
+
+   let res  = check miss1 (1,2);;
+
+   let hit1 =  match (check miss1 (1, 3)) with | Continue p -> p | _ -> failwith "";;
+
+   let hit2  = match (check hit1 (1,1)) with | Continue p -> p | _ -> failwith "";; *)
+
+

@@ -12,6 +12,19 @@ type command =
 exception Empty
 
 exception Malformed
+let check_string_form target = 
+	 String.length (target) = 2 && 
+	let first = int_of_char (String.get target 1)  in (64 < first && first < 90 ) && 
+	let second = int_of_string (String.sub target 1 2) in (1 < second && second < 26) 
+let check_list_form t =
+	if List.length t = 1 then 
+	let target = (List.hd t) in check_string_form target
+	else if List.length t = 2 then
+		let target1 = List.hd t in let target2 = List.nth t 1 in check_string_form target1 && check_string_form target2
+	else false
+		
+
+
 (**[parse str] takes string [str] and splits it at any space characters, returning empty for the empty
 string, a command of value Quit if the user typed quit, or a Go command with value equal to a list of all strings following the first if the first string is go**)
 let parse (str : string) :  command =
@@ -19,8 +32,15 @@ let parse (str : string) :  command =
 	else let strarray = String.split_on_char ' ' str in
 		match strarray with
 			|[] -> Invalid
-			|h::t -> if h = "quit" then Quit else if 
-			h = "check" then let test = (List.hd t) in if List.length t = 1 && Str.string_match (Str.regexp "[A-Z][1-26]") test 0 then Check(int_of_char (String.get test 0), int_of_string (String.sub test 1 2)) else Invalid
-			 else if h = "place" then let test1 = (List.hd t) in let test2 = (List.nth t 1) in if List.length t = 2 && Str.string_match (Str.regexp "[A-Z][1-8]") test1 0 && Str.string_match (Str.regexp "[A-Z][1-26]") test2 0 then Place((int_of_char (String.get test1 0) - 64, int_of_string (String.sub test1 1 2)), (int_of_char (String.get test2 0) - 64, int_of_string (String.sub test2 1 2))) else Invalid else Invalid
+			|h::t ->  if List.length t >= 1 then
+					if h = "quit" then Quit 
+					else if h = "check" then 
+						if check_list_form t then let test = List.hd t in Check(int_of_char (String.get test 0), int_of_string (String.sub test 1 2)) 
+						else Invalid
+			 	else if h = "place" then 
+					if check_list_form t then let test1 = (List.hd t) in let test2 = (List.nth t 1) in Place((int_of_char (String.get test1 0) - 64, int_of_string (String.sub test1 1 2)), (int_of_char (String.get test2 0) - 64, int_of_string (String.sub test2 1 2))) 
+					else Invalid 
+				else Invalid
+				else Invalid
 
 
