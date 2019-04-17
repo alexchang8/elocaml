@@ -1,11 +1,13 @@
 
+type cell = Empty|Ship|Miss|Hit|Sunk
 type t
 type player
 type ship
 type coord
-type board
+type board=cell list list
 type valid_board = ValidB of t | InvalidB of string
 type game_over = Continue of t | Loss of string
+(* type cell = Empty|Ship|Miss|Hit|Sunk *)
 
 val print_my_board: t -> unit
 val print_opp_board: t -> unit
