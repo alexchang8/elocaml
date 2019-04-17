@@ -20,12 +20,8 @@ let rec play_game state =
 
 
 let main () =
-<<<<<<< HEAD
   let () = print_endline 
-      "\nWelcome to Battleship! \nEach player has three ships of size 2, 3 and 4. \nPlace ships by typing \"place\" followed by your ship's start and end coordinates.\nAfter placing all your ships, begin guessing by typing \"guess\" followed by a coordinate!\nYou may view your board with \"print me\" or your opponent's with \"print opponent\" " in
-=======
-  let () = print_endline "Welcome to Battleship! \n Each player has three ships of size 2, 3 and 4. \n Place ships and then start guessing! \n Place ships with 'place [A-H][1-8] [A-H][1-8]', guess with 'check [A-H][1-8]' \n Player 1 place ship of size 2" in
->>>>>>> 6aecb69c1dffb83012e5f144105713a8a483fdce
+      "\nWelcome to Battleship! \nEach player has three ships of size 2, 3 and 4. \nPlace ships with 'place [A-H][1-8] [A-H][1-8]', guess with 'check [A-H][1-8]' \nYou may view your board with \"print me\" or your opponent's with \"print opponent\" \nPlayer 1 begin by placing ship of size 2" in
   let state = State.init in
   play_game state
 

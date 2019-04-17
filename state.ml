@@ -5,11 +5,11 @@ type state_check = Invalid of string|Valid of t|Loss of string|Quit
 let init = {players = (Player.init_player 8 8 1)::(Player.init_player 8 8 2)::[]; phase = 1; ship = 2; turn = 1}
 (**[print ship turn] prints out a string according to the turn and the ship to be placed, only called during phase 1**)
 let print ship turn =
-	let out =  String.concat "" (" Player " :: (string_of_int turn) :: " place ship of size " :: (string_of_int ship)::[]) in print_endline out
+  let out =  String.concat "" (" Player " :: (string_of_int turn) :: " place ship of size " :: (string_of_int ship)::[]) in print_endline out
 
 (**[print_turn turn] prints out a string according to the turn, called during phase 2*)
 let print_turn turn = 
-	let out =  String.concat "" (" Player " :: (string_of_int turn) :: "'s turn to guess " ::[]) in print_endline out
+  let out =  String.concat "" (" Player " :: (string_of_int turn) :: "'s turn to guess " ::[]) in print_endline out
 (**[parse_check t player]  takes in a state and a game_over of player that checks whether the game has been lost, and then propogates a loss and steps the state with the new player from check otherwise **)
 let parse_check t = function
   |Continue(player) -> let () = print_turn (t.turn) in Valid({t with turn = ((t.turn mod 2) + 1 ); players = player::(List.nth t.players 0)::[]})
@@ -28,13 +28,8 @@ let update t = function
                                               | Inva_Order -> InvalidB("Coordinates must be placed in order")
 
       in match new_player with                                              
-<<<<<<< HEAD
-      |ValidB(new_player) -> let () = Player.print_my_board new_player in if t.turn=2 && t.ship = 4 then Valid({t with phase = 2; players = List.rev (new_player::(List.nth (t.players) 1)::[])}) else if t.turn = 2 then
-          Valid({t with ship = t.ship+1; players = List.rev (new_player::(List.nth (t.players) 1)::[]); turn = (1)}) else Valid({t with turn = 2; players = List.rev (new_player::(List.nth (t.players) 1)::[])}) 
-=======
-|ValidB(new_player) -> let () = Player.print_my_board new_player in if t.turn=2 && t.ship = 4 then let () = print_endline ("all ships placed! Player 1 start guessing!") in Valid({t with phase = 2; players = List.rev (new_player::(List.nth (t.players) 1)::[])}) else if t.turn = 2 then
+      |ValidB(new_player) -> let () = Player.print_my_board new_player in if t.turn=2 && t.ship = 4 then let () = print_endline ("all ships placed! Player 1 start guessing!") in Valid({t with phase = 2; players = List.rev (new_player::(List.nth (t.players) 1)::[])}) else if t.turn = 2 then
           let () = (print (t.ship+1) 1) in Valid({t with ship = t.ship+1; players = List.rev (new_player::(List.nth (t.players) 1)::[]); turn = (1)}) else let () = (print t.ship 2) in Valid({t with turn = 2; players = List.rev (new_player::(List.nth (t.players) 1)::[])}) 
->>>>>>> 6aecb69c1dffb83012e5f144105713a8a483fdce
 
 
       |InvalidB(c) -> Invalid(c)
