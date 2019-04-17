@@ -7,6 +7,9 @@ type board
 type valid_board = ValidB of t | InvalidB of string
 type game_over = Continue of t | Loss of string
 
+val print_my_board: t -> unit
+val print_opp_board: t -> unit
+
 (** [already_guessed board (c1, c2)] is the function that determines if cell
     [(c1, c2)] has previously been guessed by a user. A cell has not been
     guessed if its value is Empty or a Ship. *)
