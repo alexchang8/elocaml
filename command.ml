@@ -14,11 +14,14 @@ type command =
 exception Empty
 
 exception Malformed
+(**[check_string_form t] returns true if the string has the form of 1 set of coordinates, e. g.  "A1" **)
 let check_string_form target =
 
   String.length (target) = 2 && 
   let first = int_of_char (String.get target 0) in (64 < first && first <= 90 ) && 
                                                    let second = int_of_string (String.sub target 1 1) in (1 <= second && second <= 26) 
+
+(**[check_list_form t] returns true if the list has the form of either 1 or 2 sets of coordinates, e. g. ["A1", "A2"]**)
 let check_list_form t =
   if List.length t = 1 then 
     let target = (List.hd t) in check_string_form target
@@ -27,9 +30,6 @@ let check_list_form t =
   else false
 
 
-
-(**[parse str] takes string [str] and splits it at any space characters, returning empty for the empty
-   string, a command of value Quit if the user typed quit, or a Go command with value equal to a list of all strings following the first if the first string is go**)
 let parse (str : string) :  command =
   if str = "" then Invalid
   else let strarray = String.split_on_char ' ' str in
