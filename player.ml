@@ -22,6 +22,13 @@ type player = {
 
 type t = player
 
+let get_name (p:t) = p.name
+
+let get_ships (p:t) = p.ships
+
+let get_shape (p:t) = p.shape
+
+let get_board (p:t) = p.board
 
 type valid_board = ValidB of t | InvalidB of string
 type game_over = Continue of t | Loss of string
@@ -29,6 +36,7 @@ type game_over = Continue of t | Loss of string
 (** [alphabet] is the alphabet allowed for the y axis coordinates of the 
     game board. *)
 let alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
 let make_coord (a, b) = Coord((a, b))
 
 (** [index c] is the 0-based index of [c] in the alphabet.
@@ -65,9 +73,6 @@ let init_empty_board x y =
 let init_shape x y = 
   (x, y)
 
-(** [init_player x y name] initializes an new player containing an empty board 
-    of size ([x], [y]), an empty ship array, and the board's shape ([x], [y]). 
-*)
 let init_player x y name : t = 
   {
     board = init_empty_board x y;
@@ -104,7 +109,7 @@ let add_ship_to_board board coords =
     | [] -> acc
     | h::t -> 
       begin
-        if List.mem (Coord (row_pos, col_pos)) coords
+        if List.mem (Coord (col_pos, row_pos)) coords
         then begin 
           if not (empty_cell h) 
           then raise Invalid_Placement 
@@ -153,9 +158,6 @@ let get_all_cords (start_cord:coord) (end_cord:coord)  =
     | (_,_), (_, _) -> raise Diagonal_Ship
 
 
-(** [insert_ship player start_cord end_cord] inserts a ship given the starting
-    and ending coordinates of the ship ([start_cord] and [end_cord]) to the
-    current players board and returns an updated player. *)
 let insert_ship (player:t) start_cord end_cord size = 
   let cord_list = get_all_cords start_cord end_cord in
   if List.length cord_list <> size 
@@ -241,8 +243,6 @@ let print_top_labels s =
     else print_endline cell_spacing
   in helper 1 s
 
-let temp_player = init_player 5 5 1
-
 (** [print_board player verbose] prints the board of the current [player]. If 
     [verbose] then the players ships will also be displayed. *)
 let print_board (player:t) verbose = 
@@ -288,15 +288,12 @@ let all_sunk (s:ship list) =
   let f acc b = acc && (is_sunk b.coords) in
   List.fold_left f true s
 
-(** [already_guessed board (c1, c2)] is the function that determines if cell
-    [(c1, c2)] has previously been guessed by a user. A cell has not been
-    guessed if its value is Empty or a Ship. *)
 let already_guessed player (c1, c2) : bool =
   let board = player.board in
   let rec inner_loop row col_pos   = 
     match row with 
     | [] -> false
-    | h::t -> if col_pos = c2 
+    | h::t -> if col_pos = c1
       then match h with
         | Empty | Ship -> false
         | Sunk | Hit | Miss -> true
@@ -305,7 +302,7 @@ let already_guessed player (c1, c2) : bool =
   let rec outer_loop b row_pos =
     match b with 
     | [] -> false
-    | h::t -> if row_pos = c1
+    | h::t -> if row_pos = c2
       then inner_loop h 1
       else outer_loop t (row_pos+1)
   in outer_loop board 1
@@ -352,19 +349,13 @@ let update_board board update_coords v : board =
         let rec loop_row row_acc row_pos col_pos r = 
           match r with
           | [] -> List.rev row_acc
-          | h::t -> if List.mem (Hit (row_pos, col_pos)) update_coords
+          | h::t -> if List.mem (Hit (col_pos, row_pos)) update_coords
             then loop_row (v::row_acc) row_pos (col_pos+1) t
             else loop_row (h::row_acc) row_pos (col_pos+1) t
         in let new_row = loop_row [] row_pos 1 h in
         loop_rows (new_row::acc) (row_pos+1) t
       end
   in loop_rows [] 1 board
-
-(** [check (c1, c2)] returns the new player with the coordinate (c1, c2) 
-    updated to represent the player's guess. 
-    Requires: Cell (c1, c2) has not previously been guessed
-    Returns the option of continue or loss
-    TODO update this comment *)
 
 let check (p:t) (c1, c2) = 
   (* 
@@ -404,18 +395,13 @@ let check (p:t) (c1, c2) =
     You can run print_my_board hit1 to print the board after the player
     has missed once and hit once.
 *)
-(* let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
 
-   let new_p = match res with | Valid p -> p | _ -> failwith "";;
-
+(* let temp_player = init_player 5 5 1
+   let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
+   let new_p = match res with | ValidB p -> p | _ -> failwith "";;
    let miss1 = match (check new_p (3, 3)) with | Continue p -> p | _ -> failwith "";;
-
-   print_my_board miss1;;
-
    let res  = check miss1 (1,2);;
-
    let hit1 =  match (check miss1 (1, 3)) with | Continue p -> p | _ -> failwith "";;
-
    let hit2  = match (check hit1 (1,1)) with | Continue p -> p | _ -> failwith "";; *)
 
 
