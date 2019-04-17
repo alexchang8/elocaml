@@ -4,7 +4,10 @@ MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
 MAIN=main.byte
+BSHIP_SERVER=battleship_server.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
+CLIENT=client.byte
+GO_SERVER=go_server.byte
 
 default: build
 	utop
@@ -17,6 +20,15 @@ test:
 
 play:
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
+
+battleship-server:
+	$(OCAMLBUILD) $(BSHIP_SERVER) && ./$(BSHIP_SERVER)
+
+client:
+	$(OCAMLBUILD) $(CLIENT) && ./$(CLIENT)
+
+go-server:
+	$(OCAMLBUILD) $(GO_SERVER) && ./$(GO_SERVER)
 
 zip:
 	zip src.zip *.ml* *.json _tags Makefile
