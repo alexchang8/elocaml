@@ -109,7 +109,7 @@ let add_ship_to_board board coords =
     | [] -> acc
     | h::t -> 
       begin
-        if List.mem (Coord (row_pos, col_pos)) coords
+        if List.mem (Coord (col_pos, row_pos)) coords
         then begin 
           if not (empty_cell h) 
           then raise Invalid_Placement 
@@ -136,12 +136,12 @@ let match_coord c =
    based on a ship's start and end coordinates.
    Raises [Out_of_Bounds] if user creates a ship bigger than the board
    Raises [Diagonal_Ship] if user creates a diagonal ship **)
-let get_all_cords (start_cord:coord) (end_cord:coord)  = 
+let get_all_cords (player:t) (start_cord:coord) (end_cord:coord)  = 
   if 
-    (start_cord |> match_coord |> fst > 25) || 
-    (start_cord |> match_coord |> snd > 25) ||
-    (end_cord |> match_coord |> fst > 25) || 
-    (end_cord |> match_coord |> snd > 25)
+    (start_cord |> match_coord |> fst > (fst player.shape)) || 
+    (start_cord |> match_coord |> snd > (snd player.shape)) ||
+    (end_cord |> match_coord |> fst > (fst player.shape)) || 
+    (end_cord |> match_coord |> snd > (snd player.shape))
   then raise Out_of_Bounds
   else match (match_coord start_cord), (match_coord end_cord) with 
     | (a1, b1), (a2, b2) when a1=a2 -> begin 
@@ -159,7 +159,7 @@ let get_all_cords (start_cord:coord) (end_cord:coord)  =
 
 
 let insert_ship (player:t) start_cord end_cord size = 
-  let cord_list = get_all_cords start_cord end_cord in
+  let cord_list = get_all_cords player start_cord end_cord in
   if List.length cord_list <> size 
   then InvalidB "Invalid size"
   else
@@ -293,7 +293,7 @@ let already_guessed player (c1, c2) : bool =
   let rec inner_loop row col_pos   = 
     match row with 
     | [] -> false
-    | h::t -> if col_pos = c2 
+    | h::t -> if col_pos = c1
       then match h with
         | Empty | Ship -> false
         | Sunk | Hit | Miss -> true
@@ -302,7 +302,7 @@ let already_guessed player (c1, c2) : bool =
   let rec outer_loop b row_pos =
     match b with 
     | [] -> false
-    | h::t -> if row_pos = c1
+    | h::t -> if row_pos = c2
       then inner_loop h 1
       else outer_loop t (row_pos+1)
   in outer_loop board 1
@@ -349,7 +349,7 @@ let update_board board update_coords v : board =
         let rec loop_row row_acc row_pos col_pos r = 
           match r with
           | [] -> List.rev row_acc
-          | h::t -> if List.mem (Hit (row_pos, col_pos)) update_coords
+          | h::t -> if List.mem (Hit (col_pos, row_pos)) update_coords
             then loop_row (v::row_acc) row_pos (col_pos+1) t
             else loop_row (h::row_acc) row_pos (col_pos+1) t
         in let new_row = loop_row [] row_pos 1 h in
@@ -396,12 +396,11 @@ let check (p:t) (c1, c2) =
     has missed once and hit once.
 *)
 (* 
-  let temp_player = init_player 5 5 1
-  let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
-  let new_p = match  with | Valid p -> p | _ -> failwith "";;
-  let miss1 = match (check new_p (3, 3)) with | Continue p -> p | _ -> failwith "";;
-  let res  = check miss1 (1,2);;
-  let hit1 =  match (check miss1 (1, 3)) with | Continue p -> p | _ -> failwith "";;
-  let hit2  = match (check hit1 (1,1)) with | Continue p -> p | _ -> failwith "";; *)
+let temp_player = init_player 5 5 1
+let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
+let new_p = match res with | ValidB p -> p | _ -> failwith "";;
+let miss1 = match (check new_p (3, 3)) with | Continue p -> p | _ -> failwith "";;
+let hit1 =  match (check miss1 (1, 3)) with | Continue p -> p | _ -> failwith "";;
+let hit2  = match (check hit1 (1,1)) with | Continue p -> p | _ -> failwith "";; *)
 
 
