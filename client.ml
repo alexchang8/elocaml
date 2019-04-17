@@ -61,7 +61,7 @@ let rec update_view ic old_state =
 
 
 let run () =  begin
-  ANSITerminal.resize 80 25;
+  ANSITerminal.resize 80 32;
   let host = get_host () in
   let port = get_port () in
   let ic, oc = Unix.open_connection (Unix.ADDR_INET(host, port)) in
