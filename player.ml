@@ -382,7 +382,7 @@ let check (p:t) (c1, c2) =
   let (new_ships, update_coords, v) = update_ships p.ships (c1, c2) in
   let over = all_sunk new_ships in
   if over 
-  then Loss("you lost")
+  then Loss("Game over! You sunk all their ships!")
   else begin
     if v = Miss (* Print the player missed and update the board *)
     then print_endline "Miss!"
