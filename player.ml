@@ -10,6 +10,8 @@ type ship = {sunk :bool ; size:int; inserted:bool; coords: coord list}
 exception Diagonal_Ship
 exception Out_of_Bounds
 exception Invalid_Placement
+exception Inva_Order
+
 
 
 (** RI: Board shape can be no larger than 26 by 26 *)
@@ -135,17 +137,22 @@ let match_coord c =
 (* [get_all_cords start_cord end_cord] outputs the coordinate list of a ship
    based on a ship's start and end coordinates.
    Raises [Out_of_Bounds] if user creates a ship bigger than the board
-   Raises [Diagonal_Ship] if user creates a diagonal ship **)
-let get_all_cords (player:t) (start_cord:coord) (end_cord:coord)  =
-  if
-    (start_cord |> match_coord |> fst > (fst player.shape)) ||
+   Raises [Diagonal_Ship] if user creates a diagonal ship 
+   Raises [Invalid_Order] if user's star_coord and end_coord are out of order**)
+let get_all_cords (player:t) (start_cord:coord) (end_cord:coord)  = 
+  if 
+    (start_cord |> match_coord |> fst > (fst player.shape)) || 
     (start_cord |> match_coord |> snd > (snd player.shape)) ||
     (end_cord |> match_coord |> fst > (fst player.shape)) ||
     (end_cord |> match_coord |> snd > (snd player.shape))
   then raise Out_of_Bounds
-  else match (match_coord start_cord), (match_coord end_cord) with
-    | (a1, b1), (a2, b2) when a1=a2 -> begin
-        let rec mid_coords (b1:int) (b2:int) (acc:coord list) : coord list =
+  else if 
+    (end_cord |> match_coord |> fst < (start_cord |> match_coord |> fst)) ||
+    (end_cord |> match_coord |> snd < (start_cord |> match_coord |> snd))
+  then raise Inva_Order
+  else match (match_coord start_cord), (match_coord end_cord) with 
+    | (a1, b1), (a2, b2) when a1=a2 -> begin 
+        let rec mid_coords (b1:int) (b2:int) (acc:coord list) : coord list = 
           if b2 >= b1 then let new_acc = Coord (a1, b2)::acc in
             mid_coords b1 (b2-1) new_acc
           else acc in mid_coords (snd (a1, b1)) (snd (a2, b2)) []
@@ -160,8 +167,8 @@ let get_all_cords (player:t) (start_cord:coord) (end_cord:coord)  =
 
 let insert_ship (player:t) start_cord end_cord size =
   let cord_list = get_all_cords player start_cord end_cord in
-  if List.length cord_list <> size
-  then InvalidB "Invalid size"
+  if List.length cord_list <> size 
+  then InvalidB "Invalid Size.\nMust place ships in order of size 2, 3, then 4."
   else
     let new_ships = add_ship player.ships cord_list in
     let new_board = add_ship_to_board player.board cord_list in
@@ -341,7 +348,9 @@ let update_ships (ships:ship list) (c1, c2) =
         loop_ships (new_ship::acc) t update up_val
       end
       else loop_ships (h::acc) t update_coords update_val
-  in loop_ships [] ships [Hit (c1, c2)] Miss (* gross to initialize the update coordinate to a Hit but will work for now. *)
+      (* gross to initialize the update coordinate 
+         to a Hit but will work for now. *)
+  in loop_ships [] ships [Hit (c1, c2)] Miss 
 
 (** [update_board board update_coords v] computes a new board with all instances
     of update_coords replaced with the cell value [v] on the current board
@@ -380,7 +389,7 @@ let check (p:t) (c1, c2) =
   let (new_ships, update_coords, v) = update_ships p.ships (c1, c2) in
   let over = all_sunk new_ships in
   if over
-  then Loss("you lost")
+  then Loss("Game over! You sunk all their ships!")
   else begin
     let msg =
       if v = Miss (* Print the player missed and update the board *)
@@ -397,15 +406,3 @@ let check (p:t) (c1, c2) =
         name=p.name
       }, msg)
   end
-
-(* If running in utop, uncomment lines below to see the functionality.
-    You can run print_my_board hit1 to print the board after the player
-    has missed once and hit once.
-*)
-(*
-let temp_player = init_player 5 5 1
-let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
-let new_p = match res with | ValidB p -> p | _ -> failwith "";;
-let miss1 = match (check new_p (3, 3)) with | Continue p -> p | _ -> failwith "";;
-let hit1 =  match (check miss1 (1, 3)) with | Continue p -> p | _ -> failwith "";;
-let hit2  = match (check hit1 (1,1)) with | Continue p -> p | _ -> failwith "";; *)
