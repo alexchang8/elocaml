@@ -1,8 +1,6 @@
 open OUnit2
 open Player
 
-
-
 let init_player_test
     (name:string)
     (x:int)
@@ -14,6 +12,17 @@ let init_player_test
       assert_equal (x, y) (get_shape player);
       assert_equal [] (get_ships player) )
 
+let insert_ship_test 
+    (name:string)
+    (player:t)
+    (* (ship:ship) *)
+    (b:board)
+  (* (start_coord:coord)
+     (end_coord:coord) : test =  *) :test =
+  name >:: (fun _ -> 
+      assert_equal b (get_board player))
+
+
 let p_1by1 = init_player 1 1 1
 let p_4by3 = init_player 4 3 1
 let p_5by5 = init_player 5 5 2
@@ -24,13 +33,20 @@ let init_tests = [
   init_player_test "Not player 1" 5 5 2 p_5by5
 ]
 
+(* let getShip_fromList (sl)  = 
+   match sl with
+   | [hd,tl] -> hd *)
+
+let ins_3_ship = insert_ship p_4by3 (make_coord (1,1)) (make_coord (1,3)) 3
+
+
 let insert_tests = [
+  insert_ship_test "Testing 3 piece ship" p_4by3 ins_3_ship;
 
-]
 
-let suite = "Battleship Test Suite" >::: List.flatten [
-    init_tests;
-    insert_tests
-  ]
+  let suite = "Battleship Test Suite" >::: List.flatten [
+      init_tests;
+      insert_tests;
+    ]
 
 let _ = run_test_tt_main suite
