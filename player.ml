@@ -10,6 +10,8 @@ type ship = {sunk :bool ; size:int; inserted:bool; coords: coord list}
 exception Diagonal_Ship
 exception Out_of_Bounds
 exception Invalid_Placement
+exception Inva_Order
+
 
 
 (** RI: Board shape can be no larger than 26 by 26 *)
@@ -135,7 +137,8 @@ let match_coord c =
 (* [get_all_cords start_cord end_cord] outputs the coordinate list of a ship
    based on a ship's start and end coordinates.
    Raises [Out_of_Bounds] if user creates a ship bigger than the board
-   Raises [Diagonal_Ship] if user creates a diagonal ship **)
+   Raises [Diagonal_Ship] if user creates a diagonal ship 
+   Raises [Invalid_Order] if user's star_coord and end_coord are out of order**)
 let get_all_cords (player:t) (start_cord:coord) (end_cord:coord)  = 
   if 
     (start_cord |> match_coord |> fst > (fst player.shape)) || 
@@ -143,6 +146,10 @@ let get_all_cords (player:t) (start_cord:coord) (end_cord:coord)  =
     (end_cord |> match_coord |> fst > (fst player.shape)) || 
     (end_cord |> match_coord |> snd > (snd player.shape))
   then raise Out_of_Bounds
+  else if 
+    (end_cord |> match_coord |> fst < (start_cord |> match_coord |> fst)) ||
+    (end_cord |> match_coord |> snd < (start_cord |> match_coord |> snd))
+  then raise Inva_Order
   else match (match_coord start_cord), (match_coord end_cord) with 
     | (a1, b1), (a2, b2) when a1=a2 -> begin 
         let rec mid_coords (b1:int) (b2:int) (acc:coord list) : coord list = 
@@ -161,7 +168,7 @@ let get_all_cords (player:t) (start_cord:coord) (end_cord:coord)  =
 let insert_ship (player:t) start_cord end_cord size = 
   let cord_list = get_all_cords player start_cord end_cord in
   if List.length cord_list <> size 
-  then InvalidB "Invalid size"
+  then InvalidB "Invalid Size.\nMust place ships in order of size 2, 3, then 4."
   else
     let new_ships = add_ship player.ships cord_list in
     let new_board = add_ship_to_board player.board cord_list in

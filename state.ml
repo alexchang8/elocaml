@@ -15,11 +15,12 @@ let update t = function
   |Place(start, dir) -> if t.phase = 1 then let new_player = 
                                               try Player.insert_ship (List.hd t.players) (Player.make_coord start) (Player.make_coord dir) t.ship with 
                                               | Invalid_Placement -> InvalidB("Can't place there")
-                                              | Diagonal_Ship ->InvalidB("Cannot place diagonal ships")
-                                              | Out_of_Bounds ->InvalidB("out of board bounds")
+                                              | Diagonal_Ship -> InvalidB("Cannot place diagonal ships")
+                                              | Out_of_Bounds -> InvalidB("Out of board bounds")
+                                              | Inva_Order -> InvalidB("Coordinates must be placed in order")
 
       in match new_player with                                              
-|ValidB(new_player) -> let () = Player.print_my_board new_player in if t.turn=2 && t.ship = 4 then Valid({t with phase = 2; players = List.rev (new_player::(List.nth (t.players) 1)::[])}) else if t.turn = 2 then
+      |ValidB(new_player) -> let () = Player.print_my_board new_player in if t.turn=2 && t.ship = 4 then Valid({t with phase = 2; players = List.rev (new_player::(List.nth (t.players) 1)::[])}) else if t.turn = 2 then
           Valid({t with ship = t.ship+1; players = List.rev (new_player::(List.nth (t.players) 1)::[]); turn = (1)}) else Valid({t with turn = 2; players = List.rev (new_player::(List.nth (t.players) 1)::[])}) 
 
 
@@ -27,7 +28,7 @@ let update t = function
     else Invalid("wrong phase")
   (*possibly add player indices to allow more than 2 players*)
   |Check(coordinate) ->  if t.phase = 2 then if Player.already_guessed (List.nth t.players 1)  coordinate then Invalid("already guessed") else let new_player =
-                                               Player.check (List.nth t.players 1) coordinate in (parse_check t new_player) else Invalid("wrong phase")
+                                                                                                                                                 Player.check (List.nth t.players 1) coordinate in (parse_check t new_player) else Invalid("wrong phase")
   |Quit -> Quit
   |Invalid -> Invalid("Invalid command")
 

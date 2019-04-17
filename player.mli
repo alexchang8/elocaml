@@ -51,4 +51,5 @@ val get_board: t -> board
 exception Diagonal_Ship
 exception Out_of_Bounds
 exception Invalid_Placement
+exception Inva_Order
 
