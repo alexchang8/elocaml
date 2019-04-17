@@ -15,10 +15,10 @@ let init_player_test
 let insert_ship_test 
     (name:string)
     (player:t)
-    (ship:ship)
+    (* (ship:ship) *)
     (b:board)
-    (start_coord:coord)
-    (end_coord:coord) : test = 
+  (* (start_coord:coord)
+     (end_coord:coord) : test =  *) :test =
   name >:: (fun _ -> 
       assert_equal b (get_board player))
 
@@ -33,19 +33,20 @@ let init_tests = [
   init_player_test "Not player 1" 5 5 2 p_5by5
 ]
 
-let getShip_fromList (sl:ship list) : ship  = 
-  match sl with
-  | [ship,_] -> ship
+(* let getShip_fromList (sl)  = 
+   match sl with
+   | [hd,tl] -> hd *)
 
 let ins_3_ship = insert_ship p_4by3 (make_coord (1,1)) (make_coord (1,3)) 3
 
-let insert_tests = [
-  insert_ship_test "Testing 3 piece ship" p_4by3 (get_ships p_4by3) |> getShip_fromList)
-]
 
-let suite = "Battleship Test Suite" >::: List.flatten [
-    init_tests;
-    insert_tests;
-  ]
+let insert_tests = [
+  insert_ship_test "Testing 3 piece ship" p_4by3 ins_3_ship;
+
+
+  let suite = "Battleship Test Suite" >::: List.flatten [
+      init_tests;
+      insert_tests;
+    ]
 
 let _ = run_test_tt_main suite
