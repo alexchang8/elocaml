@@ -136,12 +136,12 @@ let match_coord c =
    based on a ship's start and end coordinates.
    Raises [Out_of_Bounds] if user creates a ship bigger than the board
    Raises [Diagonal_Ship] if user creates a diagonal ship **)
-let get_all_cords (start_cord:coord) (end_cord:coord)  = 
+let get_all_cords (player:t) (start_cord:coord) (end_cord:coord)  = 
   if 
-    (start_cord |> match_coord |> fst > 25) || 
-    (start_cord |> match_coord |> snd > 25) ||
-    (end_cord |> match_coord |> fst > 25) || 
-    (end_cord |> match_coord |> snd > 25)
+    (start_cord |> match_coord |> fst > (fst player.shape)) || 
+    (start_cord |> match_coord |> snd > (snd player.shape)) ||
+    (end_cord |> match_coord |> fst > (fst player.shape)) || 
+    (end_cord |> match_coord |> snd > (snd player.shape))
   then raise Out_of_Bounds
   else match (match_coord start_cord), (match_coord end_cord) with 
     | (a1, b1), (a2, b2) when a1=a2 -> begin 
@@ -159,7 +159,7 @@ let get_all_cords (start_cord:coord) (end_cord:coord)  =
 
 
 let insert_ship (player:t) start_cord end_cord size = 
-  let cord_list = get_all_cords start_cord end_cord in
+  let cord_list = get_all_cords player start_cord end_cord in
   if List.length cord_list <> size 
   then InvalidB "Invalid size"
   else
@@ -395,13 +395,12 @@ let check (p:t) (c1, c2) =
     You can run print_my_board hit1 to print the board after the player
     has missed once and hit once.
 *)
-
-(* let temp_player = init_player 5 5 1
-   let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
-   let new_p = match res with | ValidB p -> p | _ -> failwith "";;
-   let miss1 = match (check new_p (3, 3)) with | Continue p -> p | _ -> failwith "";;
-   let res  = check miss1 (1,2);;
-   let hit1 =  match (check miss1 (1, 3)) with | Continue p -> p | _ -> failwith "";;
-   let hit2  = match (check hit1 (1,1)) with | Continue p -> p | _ -> failwith "";; *)
+(* 
+let temp_player = init_player 5 5 1
+let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
+let new_p = match res with | ValidB p -> p | _ -> failwith "";;
+let miss1 = match (check new_p (3, 3)) with | Continue p -> p | _ -> failwith "";;
+let hit1 =  match (check miss1 (1, 3)) with | Continue p -> p | _ -> failwith "";;
+let hit2  = match (check hit1 (1,1)) with | Continue p -> p | _ -> failwith "";; *)
 
 
