@@ -343,7 +343,9 @@ let update_ships (ships:ship list) (c1, c2) =
         loop_ships (new_ship::acc) t update up_val
       end
       else loop_ships (h::acc) t update_coords update_val
-  in loop_ships [] ships [Hit (c1, c2)] Miss (* gross to initialize the update coordinate to a Hit but will work for now. *)
+      (* gross to initialize the update coordinate 
+         to a Hit but will work for now. *)
+  in loop_ships [] ships [Hit (c1, c2)] Miss 
 
 (** [update_board board update_coords v] computes a new board with all instances
     of update_coords replaced with the cell value [v] on the current board 
@@ -397,17 +399,3 @@ let check (p:t) (c1, c2) =
         name=p.name
       })
   end
-
-(* If running in utop, uncomment lines below to see the functionality. 
-    You can run print_my_board hit1 to print the board after the player
-    has missed once and hit once.
-*)
-(* 
-let temp_player = init_player 5 5 1
-let res = insert_ship temp_player (Coord (1,1)) (Coord (1, 3)) 3;;
-let new_p = match res with | ValidB p -> p | _ -> failwith "";;
-let miss1 = match (check new_p (3, 3)) with | Continue p -> p | _ -> failwith "";;
-let hit1 =  match (check miss1 (1, 3)) with | Continue p -> p | _ -> failwith "";;
-let hit2  = match (check hit1 (1,1)) with | Continue p -> p | _ -> failwith "";; *)
-
-
