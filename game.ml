@@ -9,8 +9,7 @@ module type Game = sig
 
   val max_players : int
 
-  (**[next_state t c] is the game state after [c] is applied.*)
-  val next_state : t -> command -> t
+  val next_state : t -> int -> command -> t
 
   (**[parse s] returns the [command] corresponding to [s]. The implementation
      depends on the game*)
