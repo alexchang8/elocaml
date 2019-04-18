@@ -1,8 +1,11 @@
 
 (* Note: You may introduce new code anywhere in this file. *) 
 open Str
+
+(**type representing a list of strings*)
 type object_phrase = string list
 
+(**type representing different possible player inputs*)
 type command = 
   | Place of (int*int)*(int*int)
   | Check of (int*int)
@@ -11,8 +14,10 @@ type command =
   | Invalid
   | Quit
 
+(**Exception for empty player input*)
 exception Empty
 
+(**Exception for malformed player inputs*)
 exception Malformed
 
 let check_string_form target =
@@ -62,8 +67,6 @@ let parse (str : string) :  command =
                     ((int_of_string (String.sub test2 1 1)), 
                      int_of_char (String.get test2 0) - 64)) 
             with Failure _ -> Invalid (* catch int_of_string errors. *)
-          else Invalid 
+          else Invalid
         else Invalid
       else Invalid
-
-
