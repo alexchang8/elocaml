@@ -50,8 +50,6 @@ let four_piece_h = [[Empty; Empty; Empty; Empty; Empty]; [Empty; Ship; Ship; Shi
                     [Empty; Empty; Empty; Empty; Empty]]
 let ins_4_ship = insert_ship p_5by5_1 (make_coord (2,2)) (make_coord (5,2)) 4
 
-
-
 let give_t v = 
   match v with
   |ValidB t-> t
@@ -60,9 +58,32 @@ let give_t v =
 let var1 = give_t ins_3_ship
 let var2 = give_t ins_4_ship 
 
+let guess1 = check var2 (2,2)
+let guess2 = check var2 (5,5)
+let guess3 = check var1 (1,1)
+let guess4 = check var1 (1,2)
+let guess5 = check var1 (1,3)
+
+let give_t_2 g = 
+  match g with
+  |Continue t -> t
+  |_->failwith "not important"
+
+let var3 = give_t_2 guess1
+let var4 = give_t_2 guess2
+let var5 = give_t_2 guess5
+
 let insert_tests = [
   insert_ship_test "Testing 3 piece ship on 4x3" (three_piece_v) (get_board var1);
   insert_ship_test "Testing 4 piece ship on 5x5" (four_piece_h) (get_board var2);
+]
+
+let already_guessed_tests = [
+  already_guessed_test "Has not guessed A1" var1 (1,1) false;
+  already_guessed_test "Has not guessed A2" var1 (1,2) false;
+  already_guessed_test "Guessed B2" var3 (2,2) true; 
+  already_guessed_test "Guessed B2" var4 (2,2) true; 
+  already_guessed_test "Guesses and Sunk" var5 (3,3) true;
 ]
 
 let string_form_test 
