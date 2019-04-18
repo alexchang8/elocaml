@@ -1,9 +1,10 @@
 
+type cell = Empty|Ship|Miss|Hit|Sunk
 type t
 type player
 type ship
 type coord
-type board
+type board=cell list list
 type valid_board = ValidB of t | InvalidB of string
 type game_over = Continue of t * string | Loss of string
 
