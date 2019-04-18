@@ -66,7 +66,7 @@ let guess5 = check var1 (1,3)
 
 let give_t_2 g = 
   match g with
-  |Continue t -> t
+  |Continue (t, _) -> t
   |_->failwith "not important"
 
 let var3 = give_t_2 guess1
@@ -82,8 +82,8 @@ let already_guessed_tests = [
   already_guessed_test "Has not guessed A1" var1 (1,1) false;
   already_guessed_test "Has not guessed A2" var1 (1,2) false;
   already_guessed_test "Guessed B2" var3 (2,2) true; 
-  already_guessed_test "Guessed B2" var4 (2,2) true; 
-  already_guessed_test "Guesses and Sunk" var5 (3,3) true;
+  already_guessed_test "Guessed B2" var4 (2,2) false; 
+  already_guessed_test "Guesses and Sunk" var5 (3,3) false;
 ]
 
 let string_form_test 
@@ -105,7 +105,7 @@ let parse_test
     (name:string)
     (s:string)
     (exp:Command.command) : test = 
-  name >:: (fun _ -> 
+  name >:: (fun _ ->
       assert_equal exp (parse s))
 
 let command_tests = [
@@ -128,7 +128,7 @@ let command_tests = [
   string_list_test "Max number in coord" ["A9"] true;
   string_list_test "Lowercase letter" ["a1"] false;
   string_list_test "Using 0" ["A0"] false;
-  string_list_test "Random values" ["H4"] true;  
+  string_list_test "Random values" ["H4"] true;
   string_list_test "Number too large" ["C42"] false;
   string_list_test "Not a number" ["Bb"] false;
   string_list_test "Not a char" ["11"] false;
@@ -144,7 +144,7 @@ let command_tests = [
   string_list_test "2 coords: Number too large second coord" ["B3"; "C42"] false;
   string_list_test "2 coords: Not a number" ["Bb"; "A2"] false;
   string_list_test "2 coords: Not a number" ["A2"; "Bb"] false;
-  string_list_test "2 coords: Not a char" ["11"; "A5"] false;  
+  string_list_test "2 coords: Not a char" ["11"; "A5"] false;
   string_list_test "2 coords: Not a char" ["A5"; "11"] false;
   (* BEGIN PARSE TESTS *)
   parse_test "Empty string" "" Invalid;
