@@ -87,8 +87,7 @@ let next_state t p_id command =
 
 let print_player_state t p_id =
   let opp = (List.nth t.players (next_pid p_id) |> fst) in
-  let p = (List.nth t.players p_id |> fst) in
-  let e = (List.nth t.players p_id |> snd) in
+  let (p,e) = (List.nth t.players p_id) in
   let my_board = Player.print_my_board p in
   let their_board = Player.print_opp_board opp in
   let turn = if t.turn - 1 = p_id then "it is your turn\n" else "it is not your turn\n" in

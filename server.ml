@@ -5,10 +5,17 @@ module type Server = sig
   val run : unit -> unit
 end
 
-module MakeServer (G:Game) = struct
 
+module MakeServer (G:Game) = struct
+  (**A type that holds the input channel, output channel, and player id
+     of a single client*)
   type connection = {ic: in_channel; oc: out_channel; p_id: int}
+  (**The port that the server will listen for players on*)
   let port = 1400
+
+  (**[wait_players sock] blocks until [G.max_players] clients have connected
+     to the server. Returns a [connection list] of [G.max_players] elements
+     corresponding to each client.*)
   let wait_players sock =
     let rec client_helper sock acc =
       if List.length acc < G.max_players then
@@ -25,6 +32,9 @@ module MakeServer (G:Game) = struct
       else acc in
     client_helper sock []
 
+  (**[c_next_state s conn] reads an input line from a particular client,
+     and if available returns the result of parsing the line and finding the next
+     state. Returns [s] if no input line is available*)
   let c_next_state s conn =
     match input_line conn.ic with
     | x -> G.parse x |> G.next_state s conn.p_id
@@ -33,6 +43,10 @@ module MakeServer (G:Game) = struct
       (*TODO: wait for client reconnection*)
       failwith "unimplmented"
 
+  (**[game_loop s conns] continuously reads all of the input channels in [conns]
+     for input lines, and parses each of them into a command, and storing the mutated
+     game state in sequence. If there are multiple connections with pending buffers,
+     the order of this sequence is not gauranteed. This function will never terminate properly.*)
   let rec game_loop (s:G.t) conns =
     (*TODO: resolve when there are multiple endlines*)
     let s' = List.fold_left c_next_state s conns in
@@ -41,6 +55,8 @@ module MakeServer (G:Game) = struct
     Unix.sleepf 0.1;
     game_loop s' conns
 
+  (**[run ()] initializes the server by binding a socket to the computers local ip
+     and [port]. It then continuously runs game_loop to send updated states to clients*)
   let run () =
     (**todo: tell clients that we are still waiting for players*)
     let host_addr = (Unix.gethostbyname(Unix.gethostname())).Unix.h_addr_list.(0) in

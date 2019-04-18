@@ -1,4 +1,6 @@
-(**TODO: implemented replay after win*)
+(**[get_host ()] prompts the user for an ip address that is hosting the game.
+   if the ip is invalid then they will be asked again. The valid ip they enter
+   is returned as an abstract [Unix.inet_addr]*)
 let rec get_host () =
   print_endline "enter the host ip:";
   let host = read_line () in
@@ -11,6 +13,8 @@ let rec get_host () =
       print_endline "unknown server";
       get_host ()
 
+(**[get_host ()] prompts the user for an port for the hosting server. If the
+   entered string is not an int the user will be prompted again*)
 let rec get_port () =
   print_endline "enter the host port:";
   match read_int () with
@@ -19,35 +23,47 @@ let rec get_port () =
     print_endline "port must be a number!";
     get_port ()
 
+(**[send_input oc] sends any input a player types into the console to [oc] after
+    they press enter. The function will run continuously and never terminate
+    properly.*)
 let rec send_input oc =
   let m = read_line () in
   output_string oc (m ^ "\n");
   flush oc;
   send_input oc
 
-let rec receive_state ic acc =
-  match input_line ic with
-  | "END_OF_FILE" -> acc
-  | x -> receive_state ic (acc ^ x ^ "\n")
-  | exception Sys_blocked_io ->
-    (*input channel is blocked*)
-    if acc = "" then ""
-    else begin
-      (*if we have a partial state, try to get it*)
-      (*TODO: make sure at some point we discard partial states*)
-      Unix.sleepf 0.5;
-      receive_state ic acc
-    end
-  | exception End_of_file ->
-    (*TODO: deal with disconnection to server*)
-    failwith "unimplemented"
+(**[receive_state ic] returns a string corresponding to the complete
+   game view the client should have based on the response from [ic]. If
+   [ic] has no buffered game view, returns "". The end of a game view is marked
+   by the string "END_OF_FILE" alone on a line.*)
+let receive_state ic =
+  let rec helper ic acc =
+    match input_line ic with
+    | "END_OF_FILE" -> acc
+    | x -> helper ic (acc ^ x ^ "\n")
+    | exception Sys_blocked_io ->
+      (*input channel is blocked*)
+      if acc = "" then ""
+      else begin
+        (*if we have a partial state, try to get it*)
+        (*TODO: make sure at some point we discard partial states*)
+        Unix.sleepf 0.5;
+        helper ic acc
+      end
+    | exception End_of_file ->
+      (*TODO: deal with disconnection to server*)
+      failwith "unimplemented"
+  in
+  helper ic ""
 
+(**[update_view ic old_state] updates the client terminal to be the
+    string received from [receive_state ic] if the it is not empty
+    and not the same as [old_state]. Continuously polls for new states
+    to display to the client. This function will run continuously and
+    never terminate properly.*)
 let rec update_view ic old_state =
-  let new_state = receive_state ic "" in
+  let new_state = receive_state ic in
   if new_state <> old_state && new_state <> "" then begin
-    (*ANSITerminal.erase ANSITerminal.Screen;*)
-    (*ANSITerminal.set_cursor 0 0;
-      ANSITerminal.print_string [] new_state;*)
     print_string "\x1Bc";
     print_string new_state;
     flush stdout;
@@ -59,7 +75,10 @@ let rec update_view ic old_state =
     update_view ic old_state
   end
 
-
+(**Initializes the overall client by first prompting a user for
+   an ip and port, and then initializing a socket connection. The process
+   is then forked, so one process continuously polls for client view updates
+   and the other process sends any input lines the user writes to the socket*)
 let run () =  begin
   ANSITerminal.resize 80 32;
   let host = get_host () in
@@ -71,6 +90,7 @@ let run () =  begin
   | _ -> send_input oc
 end
 
+(**Dummy variable to initialize run*)
 let _ =
   print_string "\x1Bc";
   run ()

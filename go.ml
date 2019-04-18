@@ -1,38 +1,59 @@
+(**The type corresponding to each space on the board.
+   Star is equivalent to empty, but is added for printing the board
+   nicely.*)
 type cell = White | Black | Empty | Star
 
-type board = cell array array
-
-type t = {board: board; active_p: int; b_captured: int; w_captured: int;
+(**The abstract type representing a game state of go.
+   Board: a [cell array array] representing the current board
+   active_p: the active [p_id]
+   b_captured: the number of pieces black has captured
+   w_captured: the number of pieces white has captured
+   b_error: error messages to be sent to the player playing black
+   w_error: error messages to be sent to the player playing white
+   last_passed: true iff in the last game state the active player passed*)
+type t = {board: cell array array; active_p: int; b_captured: int; w_captured: int;
           b_error: string; w_error: string; score_str: string; last_passed : bool}
 
+(**Go is a 2 player game. This is read by the server functor*)
 let max_players = 2
 
+(**The type corresponding to parsed strings entered by the player.
+   Place (x,y): command corresponding to a player attempting to place a stone at (x,y)
+   Pass: command corresponding to a player electing to skip their turn.
+   Invalid: any command that did not parse*)
 type command = Place of (int * int) | Pass | Invalid
 
+(**The list of points that are "stars" on the board. This is purely for printing*)
 let stars = [(3,3);(3,9);(3,15);(9,3);(9,9);(9,15);(15,3);(15,9);(15,15)]
 
+(**A 19 x 19 board filled with [Empty], and [Star] at the points in [stars]*)
 let init_board =
   let b = Array.make_matrix 19 19 Empty in
   List.iter (fun (y,x) -> b.(y).(x) <- Star) stars;
   b
 
+(**The initial state of the game*)
 let init_state = {board = Array.copy init_board; active_p = 0;
                   b_captured = 0; w_captured = 0; b_error = "";
                   w_error = ""; score_str = ""; last_passed = false}
 
+(**escape sequence for the white stones*)
 let white = "\226\151\143"
+(**escape sequence for the black stones*)
 let black = "\226\151\139"
+(**escape sequence for the empty spaces*)
 let empty = "\194\183"
 
+(**[cell_string c] returns the printed symbol corresponding to [c]*)
 let cell_string = function
   | White -> white
   | Black -> black
   | Empty -> empty
   | Star -> "+"
 
-let col_label = "   A B C D E F G H J K L M N O P Q R S T "
-
+(**[board_string b] is a stringified representation of the board*)
 let board_string b =
+  let col_label = "   A B C D E F G H J K L M N O P Q R S T " in
   let row_string row =
     Array.fold_left (fun acc c -> acc ^ " " ^ cell_string c) "" row in
   let str_int_2c i =
@@ -45,12 +66,14 @@ let board_string b =
    List.rev |> List.fold_left (fun acc s -> acc ^ "\n" ^ s) "" )
   ^"\n" ^ col_label
 
-let p_id_symbol p_id = if p_id = 0 then black else white
-
+(**[next_p p_id] returns 1 if p_id is 0, and 0 otherwise *)
 let next_p p_id = if p_id = 0 then 1 else 0
 
+(**[print_player_state t p_id] returns the string corresponding to the complete
+   player view for player *)
 let print_player_state t p_id =
-  let opening_msg = "  " ^ white ^ " has captured " ^ string_of_int t.w_captured
+  let p_id_symbol p_id = if p_id = 0 then black else white in
+  let opening_msg = "  " ^ white ^ " has Emptycaptured " ^ string_of_int t.w_captured
                     ^ " pieces\n" ^ "  " ^ black ^ " has captured " ^
                     string_of_int t.b_captured ^ " pieces\n" ^ "\n" in
   let e_msg = if p_id = 0 then t.b_error else t.w_error in
@@ -58,20 +81,30 @@ let print_player_state t p_id =
                     (if t.active_p = 0 then black else white) ^ " to play" in
   opening_msg ^ board_string t.board ^ closing_msg ^ e_msg ^ t.score_str
 
+(**Returns [true] iff the character code of c is between the character code
+   of lo and up inclusive*)
 let char_in_range c lo up =
   Char.code c >= Char.code lo && Char.code c <= Char.code up
 
+(**Returns [true] iff c is in A..H or c is in J..T *)
 let valid_char_let c =
   char_in_range c 'A' 'H' || char_in_range c 'J' 'T'
 
+(**Returns [true] iff c is in the character range 1..9*)
 let valid_single_char_num c =
   char_in_range c '1' '9'
 
+(**[num_let_tup x l] Returns the board position corresponding to the number
+   x and letter l using standard Go notation. Note that the letter 'I' is skipped.*)
 let num_let_tup x l =
   let col = if char_in_range l 'A' 'H' then Char.code l - Char.code 'A'
     else Char.code l - Char.code 'A' - 1 in
   (19 - x, col)
 
+(**[parse s] returns the command corresponding to a string. A string corresponds
+   to pass iff it is "pass". A string corresponding to [Place] is of the form
+   ax, where [valid_char_let a] is [true] and x is a string corresponding to a number
+   in 1..19 . Any other string is [Invalid].*)
 let parse s =
   if s = "pass" then Pass else
   if s = "" || not (valid_char_let s.[0]) then Invalid else
@@ -95,30 +128,40 @@ struct
       0 -> Pervasives.compare y0 y1
     | c -> c
 end
+(**Intpairs and PairsSet is taken directly from
+   https://caml.inria.fr/pub/docs/manual-ocaml/libref/Set.html *)
 module PairsSet = Set.Make(IntPairs)
 
+(**[is_empty c] returns true iff c is [Star] or [Empty]*)
 let is_empty = function
   | White | Black -> false
   | Star | Empty -> true
 
+(**[adj_cells c] returns a list of coordinates corresponding to cells that
+   are adjacent to [c] in a 19x19 board. Adjacent cells are cells that are directly
+   above or direcly below a cell.*)
 let adj_cells (y, x) =
   let in_bounds x = x >= 0 && x < 19 in
   [(y + 1, x);(y - 1,x);(y, x + 1); (y, x - 1)] |>
   List.filter (fun z -> in_bounds (fst z) && in_bounds (snd z))
 
-let cell_eq c1 c2 =
-  match c1,c2 with
-  | c1,c2 when c1 = c2 -> true
-  | (Star, Empty) | (Empty, Star) -> true
-  | _ -> false
-
+(**The same as Array.fold_left, except the first argument to [f] is the index
+   of the element*)
 let fold_lefti f acc a =
   let rec helper f acc a i =
     if i >= Array.length a then acc
     else helper f (f acc a.(i) i) a (i + 1) in
   helper f acc a 0
 
+(**[stones b] returns a list of the boards equivalent stones. Equivalent stones
+   are adjacent, (not diagonal), and have the same type (with [Star] and [Empty] equivalent).*)
 let stones b =
+  let cell_eq c1 c2 =
+    match c1,c2 with
+    | c1,c2 when c1 = c2 -> true
+    | (Star, Empty) | (Empty, Star) -> true
+    | _ -> false
+  in
   let rec stone_helper (y, x) b searched =
     if PairsSet.mem (y,x) !searched then []
     else begin
@@ -139,6 +182,10 @@ let stones b =
         ) [] row)
     ) [] b
 
+(**[liberties b stone] returns the number of liberties of a given stone. A liberty
+   is defined as an [Empty] cell adjacent to a stone. Equivalent stones share liberties.
+   Note that this possibly double counts liberties, but if it returns 0 the number of
+   liberties is gauranteed to be 0*)
 let liberties b stone =
   List.fold_left (fun acc c ->
       acc + List.fold_left (fun c_libs (y,x) ->
@@ -146,6 +193,8 @@ let liberties b stone =
         0 (adj_cells c)
     ) 0 stone
 
+(**[remove_dead_stones color b stones] removes stones with 0 liberties of color
+   [color] in a given board [b]. Returns the number of stones removed.*)
 let remove_dead_stones color b stones =
   stones |> List.filter (fun stone ->
       let (y,x) = List.hd stone in b.(y).(x) = color) |>
@@ -157,20 +206,28 @@ let remove_dead_stones color b stones =
       else acc
     ) 0
 
+(**[restore_stars b] mutates [b], restoring the star positions if they are
+   [Empty]*)
 let restore_stars b =
   List.iter (fun (y,x) -> if b.(y).(x) = Empty then b.(y).(x) <- Star) stars
 
+(**[update_error t p_id e] returns the game state [t], but with an added
+   error message for the player [p_id]*)
 let update_error t p_id e =
   if p_id = 0 then {t with b_error = t.b_error ^ "\n" ^ e}
   else {t with w_error = t.w_error ^ "\n" ^ e}
 
-let color_reachable stone (color:cell) b =
-  List.exists (fun coords -> adj_cells coords |>
-                             List.exists (fun (y,x) -> b.(y).(x) = color)) stone
-
+(**[score t] returns a string containing the score of white and black in a given
+   game t. Territory scoring is used. A color owns a territory if through any possible
+   adjacent path of empty cells, only one color can be reached. The score is then the
+   sum of a colors prisoners and the number of empty cells in their territories.*)
 let score t =
-  let empty_chains = stones t.board |> List.filter (fun stone ->
-      let (y,x) = List.hd stone in is_empty t.board.(y).(x)) in
+  let color_reachable stone (color:cell) b =
+    List.exists (fun coords -> adj_cells coords |>
+                               List.exists (fun (y,x) -> b.(y).(x) = color)) stone in
+  let empty_chains = stones t.board |>
+                     List.filter (fun stone ->
+                         let (y,x) = List.hd stone in is_empty t.board.(y).(x)) in
   let tagged_chains = List.map (fun stone ->
       match (color_reachable stone Black t.board, color_reachable stone White t.board) with
       | (true, true) | (false, false) -> (Empty, stone)
@@ -185,7 +242,13 @@ let score t =
   "\n " ^ black ^ "'s score is : " ^ string_of_int b_score ^
   "\n " ^ white ^ "'s score is : " ^ string_of_int w_score
 
-
+(**[next_state t p_id command] returns the state of the game after
+   [p_id] tries to play [command]. If [command] is [Invalid] or it is not that
+   player's turn, only error messages are updated. If the command is [Pass], that
+   player's turn is skipped. If the command is [Place (y,x)], a stone of the players
+   color is then placed at the corresponding cell if it is empty or star. Then,
+   dead stones of the opponent are removed, followed by dead stones of the player.
+   If both players pass in a row then the game is scored and ends.*)
 let next_state t p_id command =
   if t.active_p <> p_id then update_error t p_id "It isn't your turn!"
   else match command with
