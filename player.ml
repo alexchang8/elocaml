@@ -295,6 +295,9 @@ let all_sunk (s:ship list) =
   let f acc b = acc && (is_sunk b.coords) in
   List.fold_left f true s
 
+(** [already_guessed board (c1, c2)] is the function that determines if cell
+    [(c1, c2)] has previously been guessed by a user. A cell has not been
+    guessed if its value is Empty or a Ship. *)
 let already_guessed player (c1, c2) : bool =
   let board = player.board in
   let rec inner_loop row col_pos   = 

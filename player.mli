@@ -39,6 +39,9 @@ val check:  t -> (int*int) -> game_over
     coordinates. *)
 val make_coord: (int*int) -> coord
 
+
+(* val match_coord: coord ->(int*int) *)
+
 (** [get_name p] returns the name of the current player [p]. *)
 val get_name: t -> int
 
