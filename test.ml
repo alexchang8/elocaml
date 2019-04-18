@@ -1,5 +1,6 @@
 open OUnit2
 open Player
+open Command
 
 (* type cell = Empty|Ship|Miss|Hit|Sunk
    type board= cell list list *)
@@ -64,10 +65,104 @@ let insert_tests = [
   insert_ship_test "Testing 4 piece ship on 5x5" (four_piece_h) (get_board var2);
 ]
 
+let string_form_test 
+    (name:string)
+    (s:string)
+    (expected:bool) : test =
+  name >:: (fun _ -> 
+      assert_equal expected (check_string_form s) ~printer:string_of_bool;
+    )
+
+let string_list_test
+    (name:string)
+    (sl:string list)
+    (exp:bool) : test = 
+  name >:: (fun _ -> 
+      assert_equal exp (check_list_form sl) ~printer:string_of_bool)
+
+let parse_test
+    (name:string)
+    (s:string)
+    (exp:Command.command) : test = 
+  name >:: (fun _ -> 
+      assert_equal exp (parse s))
+
+let command_tests = [
+  string_form_test "Valid form" "A1" true;
+  string_form_test "Max Letter" "Z1" true;
+  (* Update below test to A26 once numbers can reach double digits *)
+  string_form_test "Max number" "A9" true;
+  string_form_test "Lowercase letter" "a1" false;
+  string_form_test "Using 0" "A0" false;
+  string_form_test "Random values" "H4" true;
+  string_form_test "Number out of range" "C42" false;
+  string_form_test "Not a number" "Cc" false;
+  string_form_test "Not a char" "11" false;
+  (* BEGIN STRING LIST TESTS *)
+  string_list_test "Valid 1 coordinate" ["A1"] true;
+  string_list_test "Valid 2 coordinates" ["A1"; "B1"] true;
+  string_list_test "Valid same coordinates" ["A1"; "A1"] true;
+  string_list_test "Max Letter in coord" ["Z1"] true;
+  (* Update below test to A26 once numbers can reach double digits *)
+  string_list_test "Max number in coord" ["A9"] true;
+  string_list_test "Lowercase letter" ["a1"] false;
+  string_list_test "Using 0" ["A0"] false;
+  string_list_test "Random values" ["H4"] true;  
+  string_list_test "Number too large" ["C42"] false;
+  string_list_test "Not a number" ["Bb"] false;
+  string_list_test "Not a char" ["11"] false;
+  string_list_test "2 coords: Max Letter in coord" ["Z1"; "B3"] true;
+  (* Update below test to A26 once numbers can reach double digits *)
+  string_list_test "2 coords: Max number in coord" ["A9"; "B3"] true;
+  string_list_test "2 coords: Lowercase letter in first coord" ["a1"; "B3"] false;
+  string_list_test "2 coords: Lowercase letter in second coord" ["B3"; "a1"] false;
+  string_list_test "2 coords: Using 0" ["A0"; "B3"] false;
+  string_list_test "2 coords: Using 0 in second coord" ["B3"; "A0"] false;
+  string_list_test "2 coords: Random values" ["H4"; "U4"] true;
+  string_list_test "2 coords: Number too large first coord" ["C42"; "B3"] false;
+  string_list_test "2 coords: Number too large second coord" ["B3"; "C42"] false;
+  string_list_test "2 coords: Not a number" ["Bb"; "A2"] false;
+  string_list_test "2 coords: Not a number" ["A2"; "Bb"] false;
+  string_list_test "2 coords: Not a char" ["11"; "A5"] false;  
+  string_list_test "2 coords: Not a char" ["A5"; "11"] false;
+  (* BEGIN PARSE TESTS *)
+  parse_test "Empty string" "" Invalid;
+  parse_test "Only white space" "    " Invalid;
+  parse_test "Quitting" "quit" Quit;
+  parse_test "Case sensitive quit" "Quit" Invalid;
+  parse_test "Quit with extra space" "   quit   " Invalid;
+  parse_test "Print with no label" "print" Invalid;
+  parse_test "Print own board" "print me" PrintMe;
+  parse_test "Case sensitive print me" "Print Me" Invalid;
+  parse_test "Print opp board" "print opponent" PrintOpp;
+  parse_test "Case sensitive print opp" "Print Opponent" Invalid;
+  parse_test "Print extra spaces in middle" "print      me" Invalid;
+  parse_test "Invalid print term" "print Google" Invalid;
+  parse_test "Random invalid letters" "bdklhfewow" Invalid;
+  parse_test "Check with no coord" "check" Invalid;
+  parse_test "Valid check" "check A1" (Check (1,1));
+  parse_test "Invalid coordinate" "check 11" Invalid;
+  parse_test "Invalid coordinate (2)" "check C42" Invalid;
+  parse_test "Case sensitive coordinate" "check a1" Invalid;
+  parse_test "Check random coordinate" "check C5" (Check (5, 3));
+  parse_test "Check case sensitive" "Check C2" Invalid;
+  parse_test "Place normal" "place A1 A3" (Place ((1,1), (3,1)));
+  parse_test "Place no coordinates" "place" Invalid;
+  parse_test "Place one coordinate" "place D3" Invalid;
+  parse_test "Place case sensitive" "Place A1 A3" Invalid;
+  parse_test "Place invalid first coord" "place h3 H4" Invalid;
+  parse_test "Place invalid second coord" "place C3 c4" Invalid;
+  parse_test "Place both coords invalid" "place c1 c3" Invalid;
+  parse_test "Place coordinate with zero" "place C0 C5" Invalid;
+  parse_test "Place allow diagonal" "place C1 H4" (Place ((1, 3), (4, 8)));
+  parse_test "Place first coord invalid size" "place C H4" Invalid
+]
+
 
 let suite = "Battleship Test Suite" >::: List.flatten [
     init_tests;
     insert_tests;
+    command_tests
   ]
 
 let _ = run_test_tt_main suite
