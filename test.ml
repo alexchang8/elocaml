@@ -209,21 +209,32 @@ let go_command_tests = [
   go_parse_test "double test" "A1 A1" Invalid;
 ]
 
-let b1 = (Array.copy Go.init_board)
-let _ =
+let b1 =
+  let b1 = (Array.copy Go.init_board) in
   b1.(0).(0) <- Go.Black;
   b1.(0).(1) <- Go.Black;
   b1.(1).(0) <- Go.White;
   b1.(1).(1) <- Go.White;
-  b1.(0).(2) <- Go.White
-let b2 = (Array.copy Go.init_board)
-let _ =
+  b1.(0).(2) <- Go.White;
+  b1
+
+let b2 =
+  let b2 = (Array.copy Go.init_board) in
   b2.(1).(0) <- Go.White;
   b2.(1).(1) <- Go.White;
   b2.(0).(2) <- Go.White;
-  b2.(9).(9) <- Go.White
+  b2.(9).(9) <- Go.White;
+  b2
+
+let remove_dead_stones_test (name: string) (b:Go.cell array array) (c:Go.cell) (e: int)
+  : test =
+  name >:: (fun _ -> assert_equal e (Go.remove_dead_stones c b (Go.stones b));)
 
 let go_board_tests = [
+  remove_dead_stones_test "remove dead test" b1 Black 2;
+  remove_dead_stones_test "no dead stones test1" b1 White 0;
+  remove_dead_stones_test "no dead stones test2" b2 White 0;
+  remove_dead_stones_test "no dead stones test3" b2 Black 0;
   next_state_test "remove test" b1 b2
 ]
 
