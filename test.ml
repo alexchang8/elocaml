@@ -183,6 +183,7 @@ let command_tests = [
 let suite = "Battleship Test Suite" >::: List.flatten [
     init_tests;
     insert_tests;
+    already_guessed_tests;
     command_tests
   ]
 
