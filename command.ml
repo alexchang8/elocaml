@@ -14,8 +14,7 @@ type command =
 exception Empty
 
 exception Malformed
-(**[check_string_form t] returns true if the string has the form of 1 set of 
-   coordinates, e. g.  "A1" **)
+
 let check_string_form target =
   try String.length (target) = 2 && 
       let first = int_of_char (String.get target 0) in 
@@ -24,8 +23,6 @@ let check_string_form target =
       (1 <= second && second <= 26)
   with Failure _ -> false (* Catch int_of_string exceptions *)
 
-(**[check_list_form t] returns true if the list has the form of either 1 or 2 
-   sets of coordinates, e. g. ["A1", "A2"]**)
 let check_list_form t =
   if List.length t = 1 then 
     let target = (List.hd t) in check_string_form target
@@ -34,7 +31,6 @@ let check_list_form t =
     let target2 = List.nth t 1  in 
     check_string_form target1  && check_string_form target2
   else false
-
 
 let parse (str : string) :  command =
   if str = "" then Invalid
