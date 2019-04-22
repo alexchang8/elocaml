@@ -25,4 +25,7 @@ module type Game = sig
       player corresponding to [id]*)
   val print_player_state: t -> int -> string
 
+  (**String that is the title of the game*)
+  val name: string
+
 end
