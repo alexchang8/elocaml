@@ -1,5 +1,7 @@
-MLS=authors.ml battleship_server.ml client.ml command.ml game.ml go_server.ml go.ml player.ml server.ml
+FILES=authors battleship_server client command game go_server go player server
+MLS = $(FILES:=.ml)
 MLIS=authors.mli client.mli command.mli player.mli server.mli
+OBJECTS = $(FILES:=.cmo)
 TEST=test.byte
 MAIN=main.byte
 BSHIP_SERVER=battleship_server.byte
@@ -11,7 +13,7 @@ default: build
 	utop
 
 build:
-	$(OCAMLBUILD) authors.cmo client.cmo command.cmo player.cmo server.cmo
+	$(OCAMLBUILD) $(OBJECTS)
 
 test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST)
