@@ -1,4 +1,7 @@
 B _build
+B _build/go
+B _build/battleship
+B _build/client-server
 PKG oUnit
 PKG yojson
 PKG ANSITerminal

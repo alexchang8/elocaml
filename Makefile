@@ -35,7 +35,8 @@ docs: docs-public docs-private
 
 docs-public: build
 	mkdir -p doc.public
-	ocamlfind ocamldoc -I _build -package yojson,ANSITerminal \
+	ocamlfind ocamldoc -I _build -I _build/go -I _build/battleship \
+	-I _build/client-server -package yojson,ANSITerminal \
 		-html -stars -d doc.public $(MLIS)
 
 docs-private: build

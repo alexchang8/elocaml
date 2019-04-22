@@ -21,7 +21,7 @@ let max_players = 2
    Place (x,y): command corresponding to a player attempting to place a stone at (x,y)
    Pass: command corresponding to a player electing to skip their turn.
    Invalid: any command that did not parse*)
-type command = Place of (int * int) | Pass | Invalid
+type command = Place of (int * int) | Pass | Invalid | Ignore
 
 (**The list of points that are "stars" on the board. This is purely for printing*)
 let stars = [(3,3);(3,9);(3,15);(9,3);(9,9);(9,15);(15,3);(15,9);(15,15)]
@@ -38,31 +38,34 @@ let init_state = {board = Array.copy init_board; active_p = 0;
                   w_error = ""; score_str = ""; last_passed = false}
 
 (**escape sequence for the white stones*)
-let white = "\226\151\143"
+let white = "\x1B[43m\x1B[29m\226\151\143\x1B[0m\x1B[0m"
 (**escape sequence for the black stones*)
-let black = "\226\151\139"
+(* let black = "\x1B[30m\226\151\139\x1B[0m" *)
+let black = "\x1B[43m\x1B[30m\226\151\143\x1B[0m\x1B[0m"
 (**escape sequence for the empty spaces*)
-let empty = "\194\183"
+let empty = "\x1B[33;7m\194\183\x1B[0m"
 
 (**[cell_string c] returns the printed symbol corresponding to [c]*)
 let cell_string = function
   | White -> white
   | Black -> black
   | Empty -> empty
-  | Star -> "+"
+  | Star -> "\x1B[33;7m+\x1B[0m"
+
+let name = "GOCAML"
 
 (**[board_string b] is a stringified representation of the board*)
 let board_string b =
   let col_label = "   A B C D E F G H J K L M N O P Q R S T " in
   let row_string row =
-    Array.fold_left (fun acc c -> acc ^ " " ^ cell_string c) "" row in
+    Array.fold_left (fun acc c -> acc ^ "\x1B[33;7m \x1B[0m" ^ cell_string c ^ "") "" row in
   let str_int_2c i =
     if i >= 10 then string_of_int i
     else " " ^ string_of_int i in
   col_label ^
   (Array.fold_left (fun acc row -> row_string row::acc) [] b |>
    List.mapi (fun i s -> let x = str_int_2c (i + 1) in
-               x ^ s ^ " " ^ x) |>
+               x ^ s ^ "\x1B[33;7m \x1B[0m" ^ x) |>
    List.rev |> List.fold_left (fun acc s -> acc ^ "\n" ^ s) "" )
   ^"\n" ^ col_label
 
@@ -73,7 +76,7 @@ let next_p p_id = if p_id = 0 then 1 else 0
    player view for player *)
 let print_player_state t p_id =
   let p_id_symbol p_id = if p_id = 0 then black else white in
-  let opening_msg = "  " ^ white ^ " has Emptycaptured " ^ string_of_int t.w_captured
+  let opening_msg = "  " ^ white ^ " has captured " ^ string_of_int t.w_captured
                     ^ " pieces\n" ^ "  " ^ black ^ " has captured " ^
                     string_of_int t.b_captured ^ " pieces\n" ^ "\n" in
   let e_msg = if p_id = 0 then t.b_error else t.w_error in
@@ -106,17 +109,27 @@ let num_let_tup x l =
    ax, where [valid_char_let a] is [true] and x is a string corresponding to a number
    in 1..19 . Any other string is [Invalid].*)
 let parse s =
-  if s = "pass" then Pass else
-  if s = "" || not (valid_char_let s.[0]) then Invalid else
-  if String.length s = 2 then
-    if valid_single_char_num s.[1] then
-      Place (num_let_tup (Char.code s.[1] - Char.code '0') s.[0])
-    else Invalid
-  else if String.length s = 3 then
-    match int_of_string_opt (String.sub s 1 2) with
-    | Some x when x >=1 && x<=19 -> Place (num_let_tup x s.[0])
-    | _ -> Invalid
-  else Invalid
+  print_endline s;
+  match String.split_on_char ' ' s with
+  | x::cs::rs::[] when x = "mouse" -> begin
+      match int_of_string_opt cs, int_of_string_opt rs with
+      | Some c, Some r when c >= 36 && c <= 72 && r >= 5 && r <= 23 ->
+        Place(r-5-2, (c-4-32)/2)
+      | _ -> Ignore
+    end
+  | _ -> begin
+      if s = "pass" then Pass else
+      if s = "" || not (valid_char_let s.[0]) then Invalid else
+      if String.length s = 2 then
+        if valid_single_char_num s.[1] then
+          Place (num_let_tup (Char.code s.[1] - Char.code '0') s.[0])
+        else Invalid
+      else if String.length s = 3 then
+        match int_of_string_opt (String.sub s 1 2) with
+        | Some x when x >=1 && x<=19 -> Place (num_let_tup x s.[0])
+        | _ -> Invalid
+      else Invalid
+    end
 
 (**Intpairs and PairsSet is taken directly from
    https://caml.inria.fr/pub/docs/manual-ocaml/libref/Set.html *)
@@ -253,6 +266,7 @@ let next_state t p_id command =
   if t.active_p <> p_id then update_error t p_id "It isn't your turn!"
   else match command with
     (**TODO: implement scoring/endgame*)
+    | Ignore -> t
     | Pass ->
       if t.last_passed then {t with active_p = -1; score_str = score t}
       else {t with active_p = next_p p_id; last_passed = true}
