@@ -1,0 +1,19 @@
+{
+  "total users": 2,
+  "users": [
+    {
+      "username": "Nate",
+      "password": "42",
+      "wins": 42,
+      "losses": 0,
+      "elo": 1
+    },
+    {
+      "username": "Ocaml",
+      "password": "ocaml",
+      "wins": 0,
+      "losses": 42,
+      "elo": 2
+    }
+  ]
+}
