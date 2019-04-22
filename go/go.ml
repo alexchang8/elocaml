@@ -114,7 +114,7 @@ let parse s =
   | x::cs::rs::[] when x = "mouse" -> begin
       match int_of_string_opt cs, int_of_string_opt rs with
       | Some c, Some r when c >= 36 && c <= 72 && r >= 5 && r <= 23 ->
-        Place(r-5, (c-4-32)/2)
+        Place(r-5-2, (c-4-32)/2)
       | _ -> Ignore
     end
   | _ -> begin
