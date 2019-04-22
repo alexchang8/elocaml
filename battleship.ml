@@ -20,6 +20,8 @@ let update_error t p_id e_msg =
       else (p, e)) t.players in
   {t with players = new_p}
 
+let name = "CAMLSHIP"
+
 let replace_error t p_id e_msg =
   let new_p = List.mapi (fun i (p, e) ->
       if i = p_id then (p, e_msg)
