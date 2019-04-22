@@ -142,6 +142,5 @@ let () = Sys.set_signal Sys.sigint (Sys.Signal_handle(fun x ->
 (**Dummy variable to initialize run*)
 let _ =
   print_string "\x1Bc";
-  print_string "\x1B[?9;1006;1015h";
   flush stdout;
   run ()
