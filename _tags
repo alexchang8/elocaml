@@ -1,1 +1,4 @@
 true: package(oUnit),package(yojson),package(ANSITerminal)
+"client-server" : include
+"battleship" : include
+"go" : include
