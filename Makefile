@@ -14,7 +14,7 @@ build:
 	$(OCAMLBUILD) authors.cmo client.cmo command.cmo player.cmo server.cmo user.cmo
 
 test:
-	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST)
+	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
 
 play:
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)

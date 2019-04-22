@@ -1,9 +1,8 @@
 open OUnit2
 open Player
 open Command
-
-(* type cell = Empty|Ship|Miss|Hit|Sunk
-   type board= cell list list *)
+open User
+open Yojson.Basic
 
 let init_player_test
     (name:string)
@@ -179,70 +178,168 @@ let command_tests = [
   parse_test "Place first coord invalid size" "place C H4" Invalid
 ]
 
+(* TODO Go tests commented out due to compilation errors. *)
+(* let go_parse_test (name:string) (s: string) (e: Go.command) : test =
+   name >:: (fun _ -> assert_equal (Go.parse s) e;)
+
+
+   let next_state_test (name: string) (b: Go.cell array array) (e: Go.cell array array) : test =
+   let t = {Go.init_state with board = b} in
+   name >:: (fun _ -> assert_equal e ((Go.next_state t 0 (Go.Place(9,9)))).board)
+
+   let go_command_tests = [
+   go_parse_test "pass" "pass" Pass;
+   go_parse_test "invalid test" "ksdjb" Invalid;
+   go_parse_test "lowercase test" "a1" Invalid;
+   go_parse_test "out of bounds test number" "a17" Invalid;
+   go_parse_test "out of bounds test letter" "U7" Invalid;
+   go_parse_test "normal test 1" "A19" (Go.Place (0,0));
+   go_parse_test "normal test 2" "A1" (Go.Place (18,0));
+   go_parse_test "normal test 3" "K10" (Go.Place (9,9));
+   go_parse_test "out of bounds test letter" "I7" Invalid;
+   go_parse_test "normal test 4" "Q16" (Go.Place (3,15));
+   go_parse_test "double test" "A1 A1" Invalid;
+   ]
+
+   let b1 =
+   let b1 = (Array.copy Go.init_board) in
+   b1.(0).(0) <- Go.Black;
+   b1.(0).(1) <- Go.Black;
+   b1.(1).(0) <- Go.White;
+   b1.(1).(1) <- Go.White;
+   b1.(0).(2) <- Go.White;
+   b1
+
+   let b2 =
+   let b2 = (Array.copy Go.init_board) in
+   b2.(1).(0) <- Go.White;
+   b2.(1).(1) <- Go.White;
+   b2.(0).(2) <- Go.White;
+   b2.(9).(9) <- Go.White;
+   b2
+
+   let remove_dead_stones_test (name: string) (b:Go.cell array array) (c:Go.cell) (e: int)
+   : test =
+   name >:: (fun _ -> assert_equal e (Go.remove_dead_stones c b (Go.stones b));)
+
+   let go_board_tests = [
+   remove_dead_stones_test "remove dead test" b1 Black 2;
+   remove_dead_stones_test "no dead stones test1" b1 White 0;
+   remove_dead_stones_test "no dead stones test2" b2 White 0;
+   remove_dead_stones_test "no dead stones test3" b2 Black 0;
+   next_state_test "remove test" b1 b2
+   ]
+
+   let go_suite = "Go Test Suite" >::: List.flatten [
+    go_command_tests;
+    go_board_tests
+   ] *)
+let rewrite_file fname new_json = 
+  let () = Sys.remove fname in
+  to_file fname new_json
+
+let bjson = "btest.json"
+let reset_json = from_file bjson
+let user1 = match (User.login "Nate" "42" bjson) with ValidUser t -> t | _ -> failwith "Not true"
+let user2 = match (User.login "Ocaml" "ocaml" bjson) with ValidUser t -> t | _ -> failwith "Not true"
+let fake_name = User.login "foo" "42" bjson
+let fake_pswd = User.login "Nate" "foo" bjson
+let () = incr_winner "Nate" bjson
+let nate43_0 = match (User.login "Nate" "42" bjson) with ValidUser t -> t | _ -> failwith "Not true"
+let ocaml_after_incr_nate = match (User.login "Ocaml" "ocaml" bjson) with ValidUser t -> t | _ -> failwith "Not true"
+let () = incr_loser "Ocaml" bjson
+let ocaml0_43 = match (User.login "Ocaml" "ocaml" bjson) with ValidUser t -> t | _ -> failwith "Not true"
+let nate_after_incr_ocaml = match (User.login "Nate" "42" bjson) with ValidUser t -> t | _ -> failwith "Not true"
+let () = incr_loser "Nate" bjson
+let nate43_1 = match (User.login "Nate" "42" bjson) with ValidUser t -> t | _ -> failwith "Not true"
+let ()  = incr_winner "Ocaml" bjson
+let ocaml1_43 = match (User.login "Ocaml" "ocaml" bjson) with ValidUser t -> t | _ -> failwith "Not true"
+let () = rewrite_file bjson reset_json (* Reset for future tests. *)
+
+let user_name_test
+    (name:string)
+    (user:User.t)
+    (ex:string) : test =
+  name >:: (fun _ ->
+      assert_equal ex (User.get_username user))
+
+let user_pswd_test
+    (name:string)
+    (user:User.t)
+    (ex:string) : test =
+  name >:: (fun _ ->
+      assert_equal ex (User.get_pswd user))
+
+let user_wins_test
+    (name:string)
+    (user:User.t)
+    (ex:int) : test =
+  name >:: (fun _ ->
+      assert_equal ex (User.get_wins user))
+
+let user_losses_test
+    (name:string)
+    (user:User.t)
+    (ex:int) : test =
+  name >:: (fun _ ->
+      assert_equal ex (User.get_losses user))
+
+let user_elo_test
+    (name:string)
+    (user:User.t)
+    (ex:int) : test =
+  name >:: (fun _ ->
+      assert_equal ex (User.get_elo user))
+
+let invalid_user_test
+    (name:string)
+    (user:User.login_type)
+    (ex:User.login_type) : test = 
+  name >:: (fun _ -> 
+      assert_equal ex user)
+
+let user_suite = [
+  user_name_test "Valid name" user1 "Nate";
+  user_name_test "Valid name" user2 "Ocaml";
+  user_name_test "Name after incr_win" nate43_0 "Nate";
+  user_name_test "Name after incr_loss" ocaml_after_incr_nate "Ocaml";
+  user_name_test "Multiple incrs" nate43_1 "Nate";
+  user_name_test "Multiple incrs" ocaml1_43 "Ocaml";
+  invalid_user_test "Invalid name" fake_name (InvalidUser ("Username: foo does not exist."));
+  invalid_user_test "Invalid password" fake_pswd (InvalidUser ("Password does not match"));
+  user_pswd_test "Valid pswd" user1 "42";
+  user_pswd_test "Valid pswd" user2 "ocaml";
+  user_pswd_test "Pswd after incr_win" nate43_0 "42";
+  user_pswd_test "Pswd after incr_loss" ocaml_after_incr_nate "ocaml";
+  user_pswd_test "Multiple incrs" nate43_1 "42";
+  user_pswd_test "Multiple incrs" ocaml1_43 "ocaml";
+  user_wins_test "42 wins" user1 42;
+  user_wins_test "0 wins" user2 0;
+  user_wins_test "43 wins" nate43_0 43;
+  user_wins_test "43 wins" nate43_1 43;
+  user_wins_test "0 wins" ocaml_after_incr_nate 0;
+  user_wins_test "0 wins" ocaml0_43 0;
+  user_wins_test "1 win" ocaml1_43 1;
+  user_losses_test "0 wins 43 losses" ocaml0_43 43;
+  user_losses_test "1 win 43 losses" ocaml1_43 43;
+  user_losses_test "0 losses" user1 0;
+  user_losses_test "42 losses" user2 42;
+  user_losses_test "0 losses after win" nate43_0 0;
+  user_losses_test "1 loss" nate43_1 1;
+  user_elo_test "Nate is #1" user1 1;
+  user_elo_test "Ocaml elo" user2 2;
+  user_elo_test "After many incrs" nate43_1 1;
+  user_elo_test "After many incrs" ocaml1_43 2;
+]
 
 let suite = "Battleship Test Suite" >::: List.flatten [
     init_tests;
     insert_tests;
     already_guessed_tests;
-    command_tests
-  ]
-
-let go_parse_test (name:string) (s: string) (e: Go.command) : test =
-  name >:: (fun _ -> assert_equal (Go.parse s) e;)
-
-
-let next_state_test (name: string) (b: Go.cell array array) (e: Go.cell array array) : test =
-  let t = {Go.init_state with board = b} in
-  name >:: (fun _ -> assert_equal e ((Go.next_state t 0 (Go.Place(9,9)))).board)
-
-let go_command_tests = [
-  go_parse_test "pass" "pass" Pass;
-  go_parse_test "invalid test" "ksdjb" Invalid;
-  go_parse_test "lowercase test" "a1" Invalid;
-  go_parse_test "out of bounds test number" "a17" Invalid;
-  go_parse_test "out of bounds test letter" "U7" Invalid;
-  go_parse_test "normal test 1" "A19" (Go.Place (0,0));
-  go_parse_test "normal test 2" "A1" (Go.Place (18,0));
-  go_parse_test "normal test 3" "K10" (Go.Place (9,9));
-  go_parse_test "out of bounds test letter" "I7" Invalid;
-  go_parse_test "normal test 4" "Q16" (Go.Place (3,15));
-  go_parse_test "double test" "A1 A1" Invalid;
-]
-
-let b1 =
-  let b1 = (Array.copy Go.init_board) in
-  b1.(0).(0) <- Go.Black;
-  b1.(0).(1) <- Go.Black;
-  b1.(1).(0) <- Go.White;
-  b1.(1).(1) <- Go.White;
-  b1.(0).(2) <- Go.White;
-  b1
-
-let b2 =
-  let b2 = (Array.copy Go.init_board) in
-  b2.(1).(0) <- Go.White;
-  b2.(1).(1) <- Go.White;
-  b2.(0).(2) <- Go.White;
-  b2.(9).(9) <- Go.White;
-  b2
-
-let remove_dead_stones_test (name: string) (b:Go.cell array array) (c:Go.cell) (e: int)
-  : test =
-  name >:: (fun _ -> assert_equal e (Go.remove_dead_stones c b (Go.stones b));)
-
-let go_board_tests = [
-  remove_dead_stones_test "remove dead test" b1 Black 2;
-  remove_dead_stones_test "no dead stones test1" b1 White 0;
-  remove_dead_stones_test "no dead stones test2" b2 White 0;
-  remove_dead_stones_test "no dead stones test3" b2 Black 0;
-  next_state_test "remove test" b1 b2
-]
-
-let go_suite = "Go Test Suite" >::: List.flatten [
-    go_command_tests;
-    go_board_tests
+    command_tests;
+    user_suite
   ]
 
 let _ =
   run_test_tt_main suite;
-  run_test_tt_main go_suite
+  (* run_test_tt_main go_suite *)
