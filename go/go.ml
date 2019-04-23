@@ -113,7 +113,7 @@ let parse s =
   match String.split_on_char ' ' s with
   | x::cs::rs::[] when x = "mouse" -> begin
       match int_of_string_opt cs, int_of_string_opt rs with
-      | Some c, Some r when c >= 36 && c <= 72 && r >= 5 && r <= 23 ->
+      | Some c, Some r when c >= 36 && c <= 72 && r >= 7 && r <= 25 ->
         Place(r-5-2, (c-4-32)/2)
       | _ -> Ignore
     end
