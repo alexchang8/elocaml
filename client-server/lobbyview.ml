@@ -1,3 +1,4 @@
+
 type active_client = {username: string; in_game: bool}
 type status = LoggedOut | LoggedIn of active_client
 type client_view = {mouse_cbs: mouse_cb list; overlay_string: string; in_lobby: bool; username:string;
@@ -31,15 +32,24 @@ let rec next_state t p_id str =
     next_state t' p_id str
   | Some client_view ->
     (*TODO *)
-
-    t
-
+    match client_view.status with 
+	| LoggedOut ->  let input = String.split_on_char ' ' str in
+		let username = List.hd input in let password = List.nth input 1 in 
+		  (match User.login username password "battleship.json" with
+		|ValidUser(_) -> t
+		|InvalidUser(_) ->  t)
+		
+	|LoggedIn(_) -> t
 let print_player_state p_id t =
   match List.assoc_opt p_id t.client_views with
   | None -> failwith "rep invariant violated"
   | Some cv ->
+    match cv.status with 
+
+     
+    |LoggedOut -> "type Username Password:\n"
     (**TODO: print lobbies you are in and lobbies you could join*)
-    if cv.in_lobby then begin
+    |LoggedIn(+)-> if cv.in_lobby then begin
       print_endline "test1";
       " ⏻ |Create Lobby |                  | Ladder |        " ^ cv.username ^ "\n\n" ^
       Gui.centered ^ "\n\n" ^ "    Host                            Players                     Spectators"

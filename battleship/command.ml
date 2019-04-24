@@ -50,7 +50,8 @@ let parse (str : string) :  command =
             else if  List.hd t = "opponent" then PrintOpp
             else Invalid
           else Invalid
-
+	else if h = "mouse" then
+let () =  print_endline(List.nth t 0) in let () =  print_endline(List.nth t 1) in Check(((int_of_string (List.nth t 0) - 30) / 4, (int_of_string (List.nth t 1)) / 4))
         else if h = "check" then 
           if check_list_form t 
           then try let test = List.hd t in 
