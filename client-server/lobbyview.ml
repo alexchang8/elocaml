@@ -2,15 +2,22 @@
 type active_client = {in_game: bool; elo:int}
 type status = LoggedOut | LoggedIn of active_client
 type loginstage = EmptyForm | Username of string
-type page = Login of loginstage | CreateAccount of loginstage | Lobby
+type page = Login of loginstage | CreateAccount of loginstage | Lobby | CreateLobby
 type client_view = {mouse_cbs: mouse_cb list; overlay_string: string; in_lobby: bool; username:string;
-                    status: status; page: page} and
+                    status: status; page: page; ocs: out_channel list} and
   mouse_cb = int * int -> client_view -> client_view option
-type lobby = {players: int; max_p: int; host: string}
-type t = {client_views: (int * client_view) list; lobbies: lobby list}
+type lobbystatus = Live | Waiting of out_channel
+type lobby = {game:string; players: int; max_p: int; host: string; lobbystatus: lobbystatus}
+type t = {client_views: (int * client_view) list; lobbies: lobby list; dced: int list}
 
-let (init_state:t) = {client_views = []; lobbies=[]}
+let (init_state:t) = {client_views = []; lobbies=[]; dced = []}
 
+let get_dced t = t.dced
+
+let remove_client_id t id =
+  {t with client_views = List.remove_assoc id t.client_views; dced = id::t.dced}
+
+let flush_dced t = {t with dced = []}
 
 let account_template = Gui.draw_rect 15 8 64 26 ^ Gui.draw_rect 29 14 59 16
                        ^ Gui.draw_rect 29 17 59 19 ^
@@ -28,6 +35,15 @@ let create_account uname = account_template  ^ Gui.print_object_tl 39 12 "Create
                            Gui.print_object_tl 30 15 uname ^
                            Gui.print_object_tl 24 24 "Login?"
 
+let create_lobby_view = Gui.draw_rect 15 8 64 26 ^
+                        Gui.print_object_tl 32 12 "Create a Lobby" ^
+                        Gui.draw_rect 18 23 33 25 ^
+                        Gui.print_object_tl 22 24 "Cancel" ^
+                        Gui.draw_rect 20 15 38 18 ^
+                        Gui.print_object_tl 21 16 "     Go Lobby" ^
+                        Gui.draw_rect 40 15 58 18 ^
+                        Gui.print_object_tl 41 16 "Battleship Lobby"
+
 let login_user_cursor = login_template "" ^ Gui.set_cursor 30 15
 
 let update_client_view (cview:client_view) (id:int) cvlist =
@@ -39,6 +55,9 @@ let create_cb (x,y) x1 x2 y1 y2 cv mouse_cbs overlay_string page =
                   page = page})
   else None
 
+let rec create_lobby_cb coords cv = create_cb coords 5 17 1 1 cv [cancel_lobby_cb] create_lobby_view (CreateLobby)
+and cancel_lobby_cb coords cv = create_cb coords 18 33 23 25 cv [create_lobby_cb] "" (Lobby)
+
 let rec login_cb coords cv = create_cb coords 18 34 23 25 cv [create_account_cb]
     login_user_cursor (Login(EmptyForm)) and
 
@@ -48,7 +67,7 @@ let rec login_cb coords cv = create_cb coords 18 34 23 25 cv [create_account_cb]
 
 let new_client (id:int) =
   (id, {mouse_cbs = [create_account_cb]; overlay_string = login_user_cursor ; in_lobby = true;
-        username = ""; status = LoggedOut; page = Login(EmptyForm)})
+        username = ""; status = LoggedOut; page = Login(EmptyForm); ocs = []})
 
 let rec resolve_mouse_cbs (cv:client_view) (mouse_cbs:mouse_cb list) coords =
   match mouse_cbs with
@@ -71,9 +90,11 @@ let next_state t p_id str =
   match List.assoc_opt p_id t.client_views with
   | None -> {t with client_views = (new_client p_id :: t.client_views)}
   | Some client_view ->
+    (**TODO: forward to all lobbies the client is connected to*)
     print_endline str;
     match Tools.is_mouse_click str with
     | None -> begin
+        let str = Tools.remove_mouse str in
         match client_view.page with
         | Login(EmptyForm) ->
           update_page_string t client_view p_id (Login(Username(str)))
@@ -83,7 +104,7 @@ let next_state t p_id str =
             | ValidUser(u) ->
               let status = LoggedIn({in_game = false; elo = User.get_elo u}) in
               let client' = {client_view with username = User.get_username u;
-                                              status = status} in
+                                              status = status; mouse_cbs = [create_lobby_cb]} in
               update_page_string t client' p_id Lobby ""
             | InvalidUser(_) ->
               update_page_string t client_view p_id (Login(EmptyForm))
@@ -106,6 +127,7 @@ let next_state t p_id str =
           User.create_user uname str "battleship.json";
           update_page_string t client_view p_id (Login(EmptyForm)) (login_template "" ^ Gui.set_cursor 30 15)
         | Lobby -> t
+        | CreateLobby -> t
       end
     | Some coords ->
       let client' = resolve_mouse_cbs client_view client_view.mouse_cbs coords in
@@ -118,7 +140,7 @@ let print_player_state p_id t =
   | Some cv ->
     (**TODO: print lobbies you are in and llbbies you could join*)
     if cv.in_lobby then begin
-      " ⏻ |Create Lobby |                  | Ladder |          user: " ^ cv.username ^ "\n\n" ^
+      " ⏻ |Create Lobby |                 | Ladder |          user: " ^ cv.username ^ "\n\n" ^
       Gui.centered ^ "\n\n" ^ "    Host                            Players                     Spectators"
       ^ "\n────────────────────────────────────────────────────────────────────────────────\n"
       ^ cv.overlay_string

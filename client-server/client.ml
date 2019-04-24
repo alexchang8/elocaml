@@ -59,11 +59,11 @@ let rec send_input oc =
     send_input oc
   end
 
-let rem_backs (s:string) = 
+let rem_backs (s:string) =
   if contains (s) ('\b') then begin
     let ind = index (s) ('\b') in
     let before = sub s 0 (ind-1) in
-    let after = sub s (ind+3) ((length s) - 4 - (length before)) in 
+    let after = sub s (ind+3) ((length s) - 4 - (length before)) in
     before ^ after
   end
   else ""
@@ -97,9 +97,7 @@ let receive_state ic =
         Unix.sleepf 0.5;
         helper ic acc
       end
-    | exception End_of_file ->
-      (*TODO: deal with disconnection to server*)
-      failwith "unimplemented"
+    | exception End_of_file -> failwith "disconnected from server!"
   in
   helper ic [] |> List.rev |> String.concat "\n"
 

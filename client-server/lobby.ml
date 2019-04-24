@@ -1,6 +1,6 @@
 type connnection = {ic: in_channel; oc: out_channel; p_id:int}
 
-let port = 1401
+let port = 1400
 
 let get_new_connections sock n =
   (*we are assuming that sock has been set to nonblocking*)
@@ -18,10 +18,9 @@ let get_new_connections sock n =
 
 let next_lobby_state s conn =
   match input_line conn.ic with
-  | x -> Lobbyview.next_state s conn.p_id (Tools.parse_backspace x |> Tools.remove_mouse)
+  | x -> Lobbyview.next_state s conn.p_id (Tools.parse_backspace x)
   | exception Sys_blocked_io -> s
-  | exception End_of_file ->
-    failwith "unimplemented"
+  | exception _ -> Lobbyview.remove_client_id s conn.p_id
 (**TODO: IMPORTANT: deal with client disconnection *)
 
 let rec game_loop (s:Lobbyview.t) (conns:connnection list) sock n =
@@ -31,10 +30,12 @@ let rec game_loop (s:Lobbyview.t) (conns:connnection list) sock n =
     let init_new_c = List.fold_left (fun acc c -> Lobbyview.next_state s c.p_id "") s new_conns in
     List.fold_left next_lobby_state init_new_c conns')
   in
+  let alive_conns = List.filter (fun c -> not (List.mem c.p_id (Lobbyview.get_dced s'))) conns' in
   List.iter(fun c -> Lobbyview.print_player_state c.p_id s' ^ "\nEND_OF_FILE\n" |> output_string c.oc;
-             flush c.oc) conns';
+             flush c.oc) alive_conns;
+  let s_resolved = Lobbyview.flush_dced s' in
   Unix.sleepf 0.1;
-  game_loop s' conns' sock n'
+  game_loop s_resolved alive_conns sock n'
 
 let _ =
   (**todo: tell clients that we are still waiting for players*)
