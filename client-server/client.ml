@@ -112,19 +112,25 @@ let rec update_view ic old_state =
     update_view ic old_state
   end
 
+let rec init_connection () =
+  let host = get_host () in
+  let port = get_port () in
+  try Unix.open_connection (Unix.ADDR_INET(host, port))
+  with _ ->
+    print_endline "error connecting to server!";
+    init_connection ()
+
 (**Initializes the overall client by first prompting a user for
    an ip and port, and then initializing a socket connection. The process
    is then forked, so one process continuously polls for client view updates
    and the other process sends any input lines the user writes to the socket*)
 let run () =  begin
   ANSITerminal.resize 80 32;
-  let host = get_host () in
-  let port = get_port () in
+  let ic, oc = init_connection () in
   let termio = Unix.tcgetattr Unix.stdin in
   Unix.tcsetattr Unix.stdin Unix.TCSADRAIN { termio with Unix.c_echo = false; Unix.c_icanon = false };
   print_string "\x1B[?9;1006;1015h";
   flush stdout;
-  let ic, oc = Unix.open_connection (Unix.ADDR_INET(host, port)) in
   Unix.set_nonblock (Unix.descr_of_in_channel ic);
   match Unix.fork () with
   | 0 -> update_view ic ""
@@ -133,11 +139,14 @@ end
 
 let old_terminal_settings = Unix.tcgetattr Unix.stdin
 
-let () = Sys.set_signal Sys.sigint (Sys.Signal_handle(fun x ->
-    print_string "\x1B[?9;1006;1015l";
-    Unix.tcsetattr Unix.stdin Unix.TCSANOW old_terminal_settings;
-    exit 0
-  ))
+
+let reset_term x =
+  print_string "\x1B[?9;1006;1015l";
+  Unix.tcsetattr Unix.stdin Unix.TCSANOW old_terminal_settings;
+  exit 0
+
+let () = Sys.set_signal Sys.sigint (Sys.Signal_handle(reset_term))
+let () = Sys.set_signal 2 (Sys.Signal_handle(reset_term))
 
 (**Dummy variable to initialize run*)
 let _ =

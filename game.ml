@@ -28,4 +28,6 @@ module type Game = sig
   (**String that is the title of the game*)
   val name: string
 
+  val terminal_size: int * int
+
 end

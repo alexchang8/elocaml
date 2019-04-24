@@ -4,16 +4,30 @@ let logo = "\x1B[38;2;255;0;0m \x1B[39m\x1B[38;2;255;7;7m \x1B[39m\x1B[38;2;255;
 let centered = String.split_on_char '\n' logo |>
                List.map(fun x -> spacer ^ x) |> String.concat "\n"
 
+let set_cursor x y =
+  let x' = string_of_int x in
+  let y' = string_of_int y in
+  "\x1B["^y'^";"^ x'^"f"
+
 let erase_square x1 y1 x2 y2 =
   let empty_row = n_spacer (x2 - x1 + 1) in
   let rec build_string n acc =
     if n < y1 then acc
-    else
-      let x' = string_of_int x1 in
-      let y' = string_of_int n in
-      build_string (n-1) (acc ^ "\x1B["^y'^";"^ x'^"f"^empty_row)
+    else build_string (n-1) (acc ^ set_cursor x1 n ^empty_row)
   in
-  "\x1B[s" ^ build_string y2 "" ^ "\x1B[u"
+  "\x1B[s" ^  build_string y2 "" ^ "\x1B[u"
+
+
+let draw_rect x1 y1 x2 y2 =
+  let line = n_builder "─" (^) "" (x2 - x1 - 1) in
+  let t_line = "┌" ^ line ^ "┐" in
+  let b_line = "└" ^ line ^ "┘" in
+  let row = "│" ^ n_spacer(x2 - x1 - 1) ^ "│" in
+  let rec build_string n acc =
+    if n <= y1 then acc
+    else build_string (n-1) (acc ^ set_cursor x1 n ^ row) in
+  "\x1B[s" ^ set_cursor x1 y1 ^ t_line ^ build_string (y2-1) "" ^
+  set_cursor x1 y2 ^ b_line ^ "\x1B[u"
 
 let rec print_object_tl x y s =
   let x' = string_of_int x in
@@ -27,7 +41,7 @@ let rec print_object_tl x y s =
     | [] -> acc in
   "\x1B[s" ^ helper y (String.split_on_char '\n' s) "" ^ "\x1B[u"
 
-(*let () =
+let () =
   print_string "\x1Bc";
   flush stdout;
   print_endline "zzzzzzzzzzzzzzzzzzzzzzzzzzz";
@@ -44,5 +58,5 @@ let rec print_object_tl x y s =
   print_endline "zzzzzzzzzzzzzzzzzzzzzzzzzzz";
   print_endline "zzzzzzzzzzzzzzzzzzzzzzzzzzz";
   print_endline "zzzzzzzzzzzzzzzzzzzzzzzzzzz";
-  print_object_tl 4 4 "this is\na test" |> print_string;
-  flush stdout;*)
+  draw_rect 2 2 20 8 |> print_string;
+  flush stdout

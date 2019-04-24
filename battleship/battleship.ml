@@ -7,6 +7,7 @@ let max_players = 2
 
 let parse = Command.parse
 
+let terminal_size = 80, 52
 
 let update_player_error t p_id np e_msg =
   let new_p = List.mapi (fun i (p, e) ->
@@ -16,7 +17,7 @@ let update_player_error t p_id np e_msg =
 
 let update_error t p_id e_msg =
   let new_p = List.mapi (fun i (p, e) ->
-      if i = p_id then (p, e ^ "\n" ^ e_msg)
+      if i = p_id then (p, "\n" ^ e_msg)
       else (p, e)) t.players in
   {t with players = new_p}
 

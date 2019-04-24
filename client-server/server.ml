@@ -24,9 +24,12 @@ module MakeServer (G:Game) = struct
         (*Lets us read multiple sockets in a single thread*)
         Unix.set_nonblock s;
         let (ic, oc) = (Unix.in_channel_of_descr s, Unix.out_channel_of_descr s) in
-        if 1 + List.length acc < G.max_players then
-          (output_string oc "waiting for more players\nEND_OF_FILE\n";
-           flush oc);
+        if 1 + List.length acc <= G.max_players then begin
+          let (x,y) = G.terminal_size in
+          let rterm = "\x1B[8;" ^ string_of_int y ^ ";"^ string_of_int x ^"t" in
+          output_string oc (rterm ^ "waiting for more players\nEND_OF_FILE\n");
+          flush oc
+        end;
         let player = {ic = ic; oc = oc; p_id = List.length acc; in_chat = ref false} in
         client_helper sock (player::acc)
       else acc in

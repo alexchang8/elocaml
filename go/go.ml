@@ -32,6 +32,8 @@ let init_board =
   List.iter (fun (y,x) -> b.(y).(x) <- Star) stars;
   b
 
+let terminal_size = (80,32)
+
 (**The initial state of the game*)
 let init_state = {board = Array.copy init_board; active_p = 0;
                   b_captured = 0; w_captured = 0; b_error = "";
