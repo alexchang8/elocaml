@@ -76,10 +76,10 @@ let receive_state ic =
   let rec helper ic acc =
     match input_line ic with
     | "END_OF_FILE" -> acc
-    | x -> helper ic (acc ^ x ^ "\n")
+    | x -> helper ic (x::acc)
     | exception Sys_blocked_io ->
       (*input channel is blocked*)
-      if acc = "" then ""
+      if acc = [] then []
       else begin
         (*if we have a partial state, try to get it*)
         (*TODO: make sure at some point we discard partial states*)
@@ -90,7 +90,7 @@ let receive_state ic =
       (*TODO: deal with disconnection to server*)
       failwith "unimplemented"
   in
-  helper ic ""
+  helper ic [] |> List.rev |> String.concat "\n"
 
 (**[update_view ic old_state] updates the client terminal to be the
     string received from [receive_state ic] if the it is not empty

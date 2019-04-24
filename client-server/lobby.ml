@@ -18,14 +18,13 @@ let get_new_connections sock n =
 
 let next_lobby_state s conn =
   match input_line conn.ic with
-  | x -> Lobbyview.next_state s conn.p_id x
+  | x -> Lobbyview.next_state s conn.p_id (Tools.parse_backspace x |> Tools.remove_mouse)
   | exception Sys_blocked_io -> s
   | exception End_of_file ->
     failwith "unimplemented"
 (**TODO: IMPORTANT: deal with client disconnection *)
 
 let rec game_loop (s:Lobbyview.t) (conns:connnection list) sock n =
-  print_endline (List.length conns |> string_of_int);
   let new_conns, n' = get_new_connections sock n in
   let conns' = List.rev_append new_conns conns in
   let s' = (

@@ -14,3 +14,30 @@ let is_mouse_click s =
       | _ -> None
     end
   | _ -> None
+
+let bregex = Str.regexp "\b \b"
+
+let string_to_list s =
+  let rec stl n acc =
+    if n < 0 then acc
+    else stl (n - 1) (s.[n]::acc)
+  in stl (String.length s - 1) []
+
+let parse_backspace s =
+  let rec helper char_list acc =
+    match char_list with
+    | h::t -> begin
+        if h = '\b' then
+          match acc with
+          | h'::t' -> helper t t'
+          | [] -> helper t acc
+        else helper t (h::acc)
+      end
+    | [] -> acc
+  in
+  helper (Str.global_replace bregex "\b" s |> string_to_list) [] |> List.rev |>
+  List.fold_left (fun acc x -> acc ^ Char.escaped x) ""
+
+let m_regex = Str.regexp "mouse [0-9]+ [0-9]+"
+
+let remove_mouse = Str.global_replace m_regex ""

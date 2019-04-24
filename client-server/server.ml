@@ -11,7 +11,7 @@ module MakeServer (G:Game) = struct
      of a single client*)
   type connection = {ic: in_channel; oc: out_channel; p_id: int; in_chat: bool ref}
   (**The port that the server will listen for players on*)
-  let port = 1400
+  let port = 1401
 
   (**[wait_players sock] blocks until [G.max_players] clients have connected
      to the server. Returns a [connection list] of [G.max_players] elements
@@ -72,12 +72,13 @@ module MakeServer (G:Game) = struct
   let c_next_state (s,chat) conn =
     match input_line conn.ic with
     | x -> begin
+        let xparsed = Tools.parse_backspace x |> Tools.remove_mouse in
         match is_chat_click x with
         | `Chat_Click -> conn.in_chat := true; print_endline "chat click!"; (s, chat)
-        | `Non_Chat_Click -> conn.in_chat := false; (G.parse x |> G.next_state s conn.p_id, chat)
+        | `Non_Chat_Click -> conn.in_chat := false; (G.parse xparsed |> G.next_state s conn.p_id, chat)
         | `Message -> begin
-            if !(conn.in_chat) then (s, Chat.next_state x chat)
-            else (G.parse x |> G.next_state s conn.p_id, chat)
+            if !(conn.in_chat) then (s, Chat.next_state xparsed chat)
+            else (G.parse xparsed |> G.next_state s conn.p_id, chat)
           end
       end
     | exception Sys_blocked_io -> (s, chat)

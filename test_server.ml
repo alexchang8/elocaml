@@ -9,7 +9,7 @@ let wait_players sock =
   (*TODO: check for disconnections*)
   let rec client_helper sock acc =
     if List.length (fst acc) < max_players then
-      let (s, _) = Unix.accept ~cloexec:false sock in
+      let (s, _) = Unix.accept sock in
       print_endline "socket accepted";
       (*Lets us read multiple sockets in a single thread*)
       Unix.set_nonblock s;
@@ -33,22 +33,36 @@ let rec game_loop s ics ocs =
   print_endline "beginning game loop";
   (*TODO: resolve when there are multiple endlines*)
   let s' = List.fold_left ic_next_state s ics in
-  print_endline s';
-  List.iter (fun c -> output_string oc (s' ^ "END_OF_FILE\n"); flush oc) ocs;
+  print_endline ("view 1" ^ s');
+  List.iter (fun oc -> output_string oc (s' ^ "END_OF_FILE\n"); flush oc) ocs;
   Unix.sleepf 0.1;
   game_loop s' ics ocs
+
+let rec game_loop_no_out s ics ocs =
+  print_endline "beginning game loop2";
+  (*TODO: resolve when there are multiple endlines*)
+  let s' = List.fold_left ic_next_state s ics in
+  print_endline ("view 2" ^ s');
+  Unix.sleepf 0.1;
+  game_loop_no_out s' ics ocs
 
 let run () =
   (**todo: tell clients that we are still waiting for players*)
   let host_addr = (Unix.gethostbyname(Unix.gethostname())).Unix.h_addr_list.(0) in
   let s_addr = Unix.ADDR_INET(host_addr, port) in
-  let sock = Unix.socket ~cloexec:false (Unix.domain_of_sockaddr s_addr) Unix.SOCK_STREAM 0 in
+  let sock = Unix.socket (Unix.domain_of_sockaddr s_addr) Unix.SOCK_STREAM 0 in
   Unix.bind sock s_addr;
   Unix.listen sock (max_players + 1);
   let (ics, ocs) = wait_players sock in
   match Unix.fork() with
-  | 0 -> game_loop init_state ics ocs
-  | _ -> game_loop init_state ics ocs
+  | 0 ->
+    let new_ics = List.map (fun x -> let res = Unix.descr_of_in_channel x |> Unix.dup |>
+                                               Unix.in_channel_of_descr in
+                             close_in x;
+                             res) ics in
+    game_loop_no_out init_state new_ics ocs
+  | _ ->
+    game_loop init_state ics ocs
 (*begin the game loop with collected clients*)
 
 let _ = run ()

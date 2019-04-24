@@ -84,7 +84,7 @@ let print_player_state t p_id =
   let e_msg = if p_id = 0 then t.b_error else t.w_error in
   let closing_msg = "\n  You are playing: " ^ p_id_symbol p_id ^ "\n  " ^
                     (if t.active_p = 0 then black else white) ^ " to play" in
-  opening_msg ^ board_string t.board ^ closing_msg ^ e_msg ^ t.score_str
+  opening_msg ^ board_string t.board ^ closing_msg ^ e_msg ^ t.score_str ^ "\n"
 
 (**Returns [true] iff the character code of c is between the character code
    of lo and up inclusive*)

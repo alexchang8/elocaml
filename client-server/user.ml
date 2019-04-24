@@ -122,11 +122,11 @@ let update_users users updated =
   in helper [] users
 
 (** [incr_user user won json_path] updates the [user] in the json at [json_path]
-    by incrementing their wins count if [won] and incrementing their losses 
+    by incrementing their wins count if [won] and incrementing their losses
     count if not [won]. The updates rewrite the json file. *)
-let incr_user user won json_path = 
+let incr_user user won json_path =
   let assoc = get_assoc user json_path in
-  let w, l = if won 
+  let w, l = if won
     then ((assoc |> member "wins" |> to_int |> (+) 1),
           (assoc |> member "losses" |> to_int))
     else ((assoc |> member "wins" |> to_int),
@@ -142,10 +142,10 @@ let incr_user user won json_path =
   let new_json = update_json user_lst
   in rewrite_file json_path new_json
 
-(** [incr_winner winner json_path] increments the wins field of the username 
+(** [incr_winner winner json_path] increments the wins field of the username
     [winner] and updates the json file at [json_path]. *)
 let incr_winner winner json_path = incr_user winner true json_path
 
-(** [incr_loser loser json_path] increments the losses field of the username 
+(** [incr_loser loser json_path] increments the losses field of the username
     [loser] and updates the json file at [json_path]. *)
 let incr_loser loser json_path = incr_user loser false json_path
