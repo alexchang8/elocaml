@@ -1,3 +1,4 @@
+open String
 (**[get_host ()] prompts the user for an ip address that is hosting the game.
    if the ip is invalid then they will be asked again. The valid ip they enter
    is returned as an abstract [Unix.inet_addr]*)
@@ -57,6 +58,16 @@ let rec send_input oc =
     flush oc;
     send_input oc
   end
+
+let rem_backs (s:string) = 
+  if contains (s) ('\b') then begin
+    let ind = index (s) ('\b') in
+    let before = sub s 0 (ind-1) in
+    let after = sub s (ind+3) ((length s) - 4 - (length before)) in 
+    before ^ after
+  end
+  else ""
+
 
 (**[send_input oc] sends any input a player types into the console to [oc] after
     they press enter. The function will run continuously and never terminate
