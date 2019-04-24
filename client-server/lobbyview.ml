@@ -24,27 +24,33 @@ let rec resolve_mouse_cbs (cv:client_view) (mouse_cbs:mouse_cb list) coords =
     end
   | [] -> cv
 
-let rec next_state t (p_id,status) str =
+let rec next_state t p_id str =
   match List.assoc_opt p_id t.client_views with
   | None ->
     let t' = {t with client_views = (new_client p_id :: t.client_views)} in
-    next_state t' (p_id,status) str
-  | Some client_view -> t(*failwith "unimplemented"*)
+    next_state t' p_id str
+  | Some client_view ->
+    (*TODO *)
+
+    t
 
 let print_player_state p_id t =
   match List.assoc_opt p_id t.client_views with
   | None -> failwith "rep invariant violated"
   | Some cv ->
     (**TODO: print lobbies you are in and lobbies you could join*)
-    if cv.in_lobby then
+    if cv.in_lobby then begin
+      print_endline "test1";
       " ⏻ |Create Lobby |                  | Ladder |        " ^ cv.username ^ "\n\n" ^
       Gui.centered ^ "\n\n" ^ "    Host                            Players                     Spectators"
       ^ "\n────────────────────────────────────────────────────────────────────────────────\n"
       ^ cv.overlay_string
-    else ""
+    end
+    else begin
+      print_endline "test2";
+      ""
+    end
 
-let _ =
-  next_state init_state (1, LoggedOut) "a string" |> print_player_state 1 |> print_endline
 (**need to do stuff with mouse callbacks *)
 (**TODO: figure out communication protocols between client and
    server.

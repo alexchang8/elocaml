@@ -40,7 +40,7 @@ let rec print_object_tl x y s =
       end
     | [] -> acc in
   "\x1B[s" ^ helper y (String.split_on_char '\n' s) "" ^ "\x1B[u"
-
+(*
 let () =
   print_string "\x1Bc";
   flush stdout;
@@ -59,4 +59,4 @@ let () =
   print_endline "zzzzzzzzzzzzzzzzzzzzzzzzzzz";
   print_endline "zzzzzzzzzzzzzzzzzzzzzzzzzzz";
   draw_rect 2 2 20 8 |> print_string;
-  flush stdout
+  flush stdout*)
