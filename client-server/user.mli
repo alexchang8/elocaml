@@ -1,3 +1,4 @@
+(**the module that contains functions for updating usernames, passwords, and elo*)
 type t
 
 type login_type = ValidUser of t | InvalidUser of string
@@ -37,6 +38,6 @@ val get_elo: t -> int
     [winner] and updates the json file at [json_path]. *)
 val incr_winner: string -> string -> unit
 
-(** [incr_loser loser json_path] increments the losses field of the username 
+(** [incr_loser loser json_path] increments the losses field of the username
     [loser] and updates the json file at [json_path]. *)
 val incr_loser: string -> string -> unit

@@ -1,3 +1,4 @@
+(**the module that holds logic for creating standalone servers from arbitrary games*)
 open Game
 
 module type Server = sig

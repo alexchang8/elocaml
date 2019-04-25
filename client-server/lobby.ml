@@ -1,7 +1,21 @@
-type connnection = {ic: in_channel; oc: out_channel; p_id:int}
+(**the module that when run starts the main server for clients to connect to*)
 
-let port = 1401
+(**the type representing a client connection*)
+type connnection = {
+  (*the input channel of the client*)
+  ic: in_channel;
+  (*the output channel of the client*)
+  oc: out_channel;
+  (*the unique id of the client given by the server*)
+  p_id:int
+}
 
+(**the port that the server will run on*)
+let port = 1400
+
+(**[get_new_connections sock n] returns accepts any connections on
+   [sock] and returns [(conn list, n)], where [conn list] is a list of the new
+   connections and [n] is a unique unassigned id*)
 let get_new_connections sock n =
   (*we are assuming that sock has been set to nonblocking*)
   let rec helper acc n =
@@ -16,13 +30,18 @@ let get_new_connections sock n =
   in
   helper [] n
 
+(**[next_lobby_state s conn] returns the next state of [s] after an input line
+   from [conn.ic]. If there is no line available returns [s], and if the client is
+   disconnected returns [Lobbyview.remove_client_id s conn.p_id]*)
 let next_lobby_state s conn =
   match input_line conn.ic with
   | x -> Lobbyview.next_state s conn.p_id conn.oc (Tools.parse_backspace x)
   | exception Sys_blocked_io -> s
   | exception _ -> Lobbyview.remove_client_id s conn.p_id
-(**TODO: IMPORTANT: deal with client disconnection *)
 
+(**[game_loop s conns sock n] continuously gets new connections,
+    removes dead connections, prints states to clients, and finds the next
+    state by collecting inputs from live clients.*)
 let rec game_loop (s:Lobbyview.t) (conns:connnection list) sock n =
   let new_conns, n' = get_new_connections sock n in
   let conns' = List.rev_append new_conns conns in
@@ -39,6 +58,7 @@ let rec game_loop (s:Lobbyview.t) (conns:connnection list) sock n =
   Unix.sleepf 0.1;
   game_loop s_resolved alive_conns sock n'
 
+(**dummy variable to initialize the server*)
 let _ =
   (**todo: tell clients that we are still waiting for players*)
   let host_addr = (Unix.gethostbyname(Unix.gethostname())).Unix.h_addr_list.(0) in

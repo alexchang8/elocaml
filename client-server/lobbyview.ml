@@ -7,10 +7,12 @@ type status = LoggedOut | LoggedIn of active_client
 (**the type representing the state of a client logging into a server*)
 type loginstage = EmptyForm | Username of string
 
-(**the type representing a oa*)
+(**the type representing the page a client is on*)
 type page = Login of loginstage | CreateAccount of loginstage | Lobby | CreateLobby
+
 (**the type representing the state of a user created lobby*)
 type lobbystatus = Live | Waiting of ((in_channel * out_channel * int * string) -> unit)
+
 (**the type holding all information about a particular lobby*)
 type lobby = {game:string; players: int; max_p: int; host: string;
               lobbystatus: lobbystatus; client_ids: int list}

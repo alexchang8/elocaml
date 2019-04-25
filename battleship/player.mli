@@ -1,4 +1,4 @@
-
+(**The module that holds logic for a single player in battleship*)
 type cell = Empty|Ship|Miss|Hit|Sunk
 type t
 type player

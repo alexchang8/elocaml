@@ -25,7 +25,7 @@ let rec get_port () =
     get_port ()
 
 (**[parse_click s] returns [Some (row, col)] if [s] is of the form
-   [\[<0;row;col. Otherwise returns none*)
+   0;row;col. Otherwise returns none*)
 let parse_click s =
   match String.split_on_char ';' s with
   | c::row::col::[] when c = "[<0" -> Some ("mouse " ^ row ^ " " ^ col ^ "\n")
