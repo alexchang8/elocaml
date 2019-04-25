@@ -270,16 +270,3 @@ let print_player_state p_id t =
     else begin
       ""
     end
-
-(**need to do stuff with mouse callbacks *)
-(**TODO: figure out communication protocols between client and
-   server.
-   The client will: receive some string that tells it to connect to an ip.
-   Instead of just swapping the connections, it will maintain connections to all
-   servers it is connected to. Everything typed is broadcast to all all servers concurrently;
-   the servers keep track of whether or not they should respond.
-
-   The server will: when a lobby is created, start a new process. Then tell
-   the client to connect to that server
-
-*)
