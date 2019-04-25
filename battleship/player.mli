@@ -8,7 +8,12 @@ type board=cell list list
 type valid_board = ValidB of t | InvalidB of string
 type game_over = Continue of t * string | Loss of string
 
+(**[print_my_board t] returns a string corresponding to a complete view
+   of [t]'s board*)
 val print_my_board: t -> string
+
+(**[print_my_board t] returns a string corresponding to a view of [t]'s board
+   without ships*)
 val print_opp_board: t -> string
 
 (** [already_guessed board (c1, c2)] is the function that determines if cell
@@ -52,7 +57,11 @@ val get_shape: t -> (int*int)
 
 (** [get_board p] returns the board of the current player [p]. *)
 val get_board: t -> board
+(**exception thrown when a player tries to place a diagonal ship*)
 exception Diagonal_Ship
+(**exception thrown when a player tries to check something out of bounds*)
 exception Out_of_Bounds
+(**exception thrown when a player tries to place a ship on top of another ship*)
 exception Invalid_Placement
+(**exception thrown when a player plays a ship of the wrong size*)
 exception Inva_Order

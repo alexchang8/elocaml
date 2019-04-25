@@ -1,6 +1,6 @@
 type connnection = {ic: in_channel; oc: out_channel; p_id:int}
 
-let port = 1400
+let port = 1401
 
 let get_new_connections sock n =
   (*we are assuming that sock has been set to nonblocking*)

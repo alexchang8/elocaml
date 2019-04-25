@@ -1,8 +1,14 @@
 open Tools
+
 type t = string list
 
+(**[n_list x n] creates a list of [n] elements, where every element is
+   [x]*)
 let n_list x = n_builder x (fun lst z -> z::lst) []
 
+(**[extend_string s] returns [s] if [s] has 25 or more characters,
+   or otherwise adds whitespace at the end of [s] until it has exactly 25
+   characters.*)
 let extend_string s =
   25 - String.length s |> n_builder " " (^) s
 
@@ -17,6 +23,8 @@ let rec next_state (s:string) (t:t) =
     left = String.sub s 25 (String.length s - 25) in
     next_state left (first25 :: t)
 
+(**[list_take_n lst n] Returns the first [n] elements of [lst]. If
+   there are less than [n] elements in [lst], then it returns [lst]*)
 let list_take_n lst n =
   let rec helper lst n acc =
     if n <= 0 then acc

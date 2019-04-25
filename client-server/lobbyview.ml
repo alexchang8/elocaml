@@ -1,13 +1,27 @@
-
+(**the type representing a logged in client*)
 type active_client = {in_game: bool; elo:int}
+
+(**the type representing the status of a client*)
 type status = LoggedOut | LoggedIn of active_client
+
+(**the type representing the state of a client logging into a server*)
 type loginstage = EmptyForm | Username of string
+
+(**the type representing a oa*)
 type page = Login of loginstage | CreateAccount of loginstage | Lobby | CreateLobby
+(**the type representing the state of a user created lobby*)
 type lobbystatus = Live | Waiting of ((in_channel * out_channel * int * string) -> unit)
+(**the type holding all information about a particular lobby*)
 type lobby = {game:string; players: int; max_p: int; host: string;
               lobbystatus: lobbystatus; client_ids: int list}
+
+(**the type holding all information about a particular client.*)
 type client_view = {oc: out_channel; mouse_cbs: mouse_cb list; overlay_string: string; username:string;
                     status: status; page: page; ocs: out_channel list; in_lobby: bool} and
+
+  (**the type representing a mouse callback. A client's mouse callbacks are checked
+     each time they click the terminal. If any of them return a new state, that state
+     will be returned.*)
   mouse_cb = int * int -> int * client_view -> t -> t option and
   t = {client_views: (int * client_view) list; lobbies: lobby list; dced: int list}
 
@@ -20,22 +34,26 @@ let remove_client_id t id =
 
 let flush_dced t = {t with dced = []}
 
+(**The string that draws the login gui*)
 let account_template = Gui.draw_rect 15 8 64 26 ^ Gui.draw_rect 29 14 59 16
                        ^ Gui.draw_rect 29 17 59 19 ^
                        Gui.print_object_tl 18 15 "username:" ^
                        Gui.print_object_tl 18 18 "password:" ^
                        Gui.draw_rect 18 23 34 25
 
+(**The string that draws the login gui with [uname] entered in the login field*)
 let login_template uname = account_template ^ Gui.print_object_tl 34 20 "(press enter to login)" ^
                            Gui.print_object_tl 39 12 "Login" ^
                            Gui.print_object_tl 30 15 uname ^
                            Gui.print_object_tl 19 24 "Create Account?"
 
+(**The string that draws the create account gui with [uname] entered in the login field*)
 let create_account uname = account_template  ^ Gui.print_object_tl 39 12 "Create account" ^
                            Gui.print_object_tl 34 20 "(press enter to create)" ^
                            Gui.print_object_tl 30 15 uname ^
                            Gui.print_object_tl 24 24 "Login?"
 
+(**The string that draws the gui for creating a game lobby*)
 let create_lobby_view = Gui.draw_rect 15 8 64 26 ^
                         Gui.print_object_tl 32 12 "Create a Lobby" ^
                         Gui.draw_rect 18 23 33 25 ^
@@ -45,14 +63,24 @@ let create_lobby_view = Gui.draw_rect 15 8 64 26 ^
                         Gui.draw_rect 40 15 58 18 ^
                         Gui.print_object_tl 41 16 "Battleship Lobby"
 
+(**The string corresponding to the ANSI escape sequence to set a users
+   cursor at the beginning of the login field*)
 let login_user_cursor = login_template "" ^ Gui.set_cursor 30 15
 
+(**[update_client_view cview id cvlist] returns cvlist with
+   the pair corresponding to [id] removed, and [(id, cview)] added*)
 let update_client_view (cview:client_view) (id:int) cvlist =
   (id, cview)::(List.remove_assoc id cvlist)
 
+(**[update_client t p_id new_client] returns t with the client view corresponding
+   to [p_id] changed to [new_client]*)
 let update_client t p_id new_client =
   {t with client_views = update_client_view new_client p_id t.client_views}
 
+(**[create_cb coords x1 x2 y1 y2 cv mouse_cbs overlay_string page t id] returns a
+   [mouse_cb], such that when a use clicks in the rectangle spanned by [x1 x2 y1 y2],
+   [t] is updated to change the client view of [id] changed to have
+   [mouse_cbs], [overlay_string], and [page]*)
 let create_cb ((x,y):int*int) x1 x2 y1 y2 cv mouse_cbs overlay_string page t id =
   if x >= x1 && x<= x2 && y>=y1 && y<= y2 then
     let cv' = {cv with mouse_cbs = mouse_cbs; overlay_string = overlay_string;
@@ -60,9 +88,12 @@ let create_cb ((x,y):int*int) x1 x2 y1 y2 cv mouse_cbs overlay_string page t id 
     Some(update_client t id cv')
   else None
 
+(**The module holding the integrated go server logic*)
 module GoServer = Integrated_server.MakeServer(Go)
+(**The module holding the integrated battle ship server logic*)
 module BshipServer = Integrated_server.MakeServer(Battleship)
 
+(**the mouse callback corresponding to a user creating a go server lobby*)
 let start_go_server (x,y) (id,cv) t =
   if x>=20 && x<=38 && y >=15 && y<=18 then begin
     print_endline "starting go server!";
@@ -80,6 +111,7 @@ let start_go_server (x,y) (id,cv) t =
   end
   else None
 
+(**the mouse callback corresponding to a user creating a battle ship lobby*)
 let start_bship_server (x,y) (id,cv) t =
   if x>=40 && x<=58 && y >=15 && y<=18 then begin
     print_endline "starting battleship server!";
@@ -97,11 +129,16 @@ let start_bship_server (x,y) (id,cv) t =
   end
   else None
 
+(**[pending_lobbies lst] returns [lst] with any lobbies with [live] status
+   removed*)
 let pending_lobbies = List.filter (fun lob ->
     match lob.lobbystatus with
     | Live -> false
     | Waiting(_) -> true)
 
+(**The callback corresponding to a user joining an existing lobby. This starts
+   a new process which runs the server. The input channel of those clients are forwarded
+   to the new server. The lobby is also removed from the available lobbies*)
 let lobby_start_cb (x,y) (id,cv) t =
   let n = (y - 11)/2 in
   let avail_lobbies = pending_lobbies t.lobbies in
@@ -140,23 +177,31 @@ let lobby_start_cb (x,y) (id,cv) t =
     end
   else None
 
+(**the mouse callback for when create_lobby is clicked*)
 let rec create_lobby_cb coords (id,cv) t =
   create_cb coords 5 17 1 1 cv [cancel_lobby_cb;start_go_server;start_bship_server] create_lobby_view (CreateLobby) t id
+(**the mouse callback for when cancel is clicked in the create lobby menu*)
 and cancel_lobby_cb coords (id, cv) t =
   create_cb coords 18 33 23 25 cv [create_lobby_cb] "" (Lobby) t id
 
+(**the mouse callback for the create account button on the login menu*)
 let rec login_cb coords (id,cv) t =
   create_cb coords 18 34 23 25 cv [create_account_cb] login_user_cursor
     (Login(EmptyForm)) t id
+(**the mouse callback for the login button on the login menu*)
 and create_account_cb coords (id,cv) t =
   create_cb coords 18 34 23 25 cv [login_cb] (create_account "" ^ Gui.set_cursor 30 15)
     (CreateAccount(EmptyForm)) t id
 
-
+(**[new_client id oc] represents the initial client view of a client
+   with p_id [id] and output channel [oc]*)
 let new_client (id:int) oc =
   (id, {oc = oc; mouse_cbs = [create_account_cb]; overlay_string = login_user_cursor ; in_lobby = true;
         username = ""; status = LoggedOut; page = Login(EmptyForm); ocs = []})
 
+(**[resolve_mouse_cbs (id,cv) state mouse_cbs coords] returns the state after
+   [coords] are clicked on the user with id [id]'s screen. This is done by
+   going through their mouse callback list*)
 let rec resolve_mouse_cbs (id,cv) state (mouse_cbs:mouse_cb list) coords =
   match mouse_cbs with
   | h::t -> begin
@@ -166,6 +211,8 @@ let rec resolve_mouse_cbs (id,cv) state (mouse_cbs:mouse_cb list) coords =
     end
   | [] -> state
 
+(**[update_page_string t cview p_id p str] returns [t] with the client view
+   corresponding to [p_id] changed to have page [p] and overlay_string [str]*)
 let update_page_string t cview p_id p str =
   let client' = {cview with page = p; overlay_string = str} in
   update_client t p_id client'
@@ -243,6 +290,7 @@ let next_state t p_id oc str =
       else
         resolve_mouse_cbs (p_id, client_view) t client_view.mouse_cbs (x,y)
 
+(**[lobbystrings lst] pretty prints the lobby list for client viewing*)
 let lobbystrings lst =
   (**todo: format host name nicely*)
   pending_lobbies lst |>

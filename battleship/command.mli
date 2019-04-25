@@ -1,4 +1,8 @@
-type command = 
+(**The command line parser for the battleship game*)
+
+(**the type representing the different kinds of commands a player can
+   execute.*)
+type command =
   | Place of (int*int)*(int*int)
   | Check of (int*int)
   | PrintMe
@@ -10,7 +14,7 @@ type command =
     if its print me it will be a print me, and so on. Anything else will return invalid.**)
 val parse : string -> command
 
-(**[check_string_form target] returns true if the string has the form of 1 set 
+(**[check_string_form target] returns true if the string has the form of 1 set
     of coordinates, e. g.  "A1" **)
 val check_string_form : string -> bool
 

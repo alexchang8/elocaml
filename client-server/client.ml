@@ -24,11 +24,15 @@ let rec get_port () =
     print_endline "port must be a number!";
     get_port ()
 
+(**[parse_click s] returns [Some (row, col)] if [s] is of the form
+   [\[<0;row;col. Otherwise returns none*)
 let parse_click s =
   match String.split_on_char ';' s with
   | c::row::col::[] when c = "[<0" -> Some ("mouse " ^ row ^ " " ^ col ^ "\n")
   | _ -> None
 
+(**[flush_mouse ()] reads characters from [stdin] until the character
+   ['M'].*)
 let rec flush_mouse () =
   let rec helper acc =
     let c = input_char stdin in
@@ -37,6 +41,9 @@ let rec flush_mouse () =
   in
   helper ""
 
+(**[send_input oc] continually sends characters from [stdin] to [oc], flushing
+   after each character. If a mouse sequence is detected, it is sent as
+   [mouse x y] with a newline.*)
 let rec send_input oc =
   let c = input_char stdin in
   if c = '\027' then begin
@@ -59,6 +66,9 @@ let rec send_input oc =
     send_input oc
   end
 
+(**[sem_backs s] returns s, where the string sequence "\b \b" deletes the
+   preceding character.
+   Example: [rem_backs "\b \btest\b \babc\b \b\b \b" = "tesa"]*)
 let rem_backs (s:string) =
   if contains (s) ('\b') then begin
     let ind = index (s) ('\b') in
@@ -67,17 +77,6 @@ let rem_backs (s:string) =
     before ^ after
   end
   else ""
-
-
-(**[send_input oc] sends any input a player types into the console to [oc] after
-    they press enter. The function will run continuously and never terminate
-    properly.*)
-
-(*let rec send_input oc =
-  let m = read_line () in
-  output_string oc (m ^ "\n");
-  flush oc;
-  send_input oc*)
 
 (**[receive_state ic] returns a string corresponding to the complete
    game view the client should have based on the response from [ic]. If
@@ -102,10 +101,10 @@ let receive_state ic =
   helper ic [] |> List.rev |> String.concat "\n"
 
 (**[update_view ic old_state] updates the client terminal to be the
-    string received from [receive_state ic] if the it is not empty
-    and not the same as [old_state]. Continuously polls for new states
-    to display to the client. This function will run continuously and
-    never terminate properly.*)
+   string received from [receive_state ic] if the it is not empty
+   and not the same as [old_state]. Continuously polls for new states
+   to display to the client. This function will run continuously and
+   never terminate properly.*)
 let rec update_view ic old_state =
   let new_state = receive_state ic in
   if new_state <> old_state && new_state <> "" then begin
@@ -121,6 +120,10 @@ let rec update_view ic old_state =
     update_view ic old_state
   end
 
+(**[init_connection ()] prompts a user for a host and port and tries
+   to initialize a socket connection. If the connection is refused then
+   it will prompt again. Returns the pair of channels corresponding to the
+   socket connection*)
 let rec init_connection () =
   let host = get_host () in
   let port = get_port () in
@@ -146,15 +149,21 @@ let run () =  begin
   | _ -> send_input oc
 end
 
+(**The terminal settings a user had on their terminal before running
+   this program*)
 let old_terminal_settings = Unix.tcgetattr Unix.stdin
 
-
+(**[reset_term _] turns off mouse clicking and restores a users old terminal
+   settings*)
 let reset_term x =
   print_string "\x1B[?9;1006;1015l";
   Unix.tcsetattr Unix.stdin Unix.TCSANOW old_terminal_settings;
   exit 0
 
+(**Dummy variable to exit gracefully with callbacks *)
 let () = Sys.set_signal Sys.sigint (Sys.Signal_handle(reset_term))
+
+(**Dummy variable to exit gracefully with callbacks *)
 let () = Sys.set_signal 2 (Sys.Signal_handle(reset_term))
 
 (**Dummy variable to initialize run*)

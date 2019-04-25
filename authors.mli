@@ -1,6 +1,6 @@
 (**
    Metadata about this submission.
-   @author All author names and NetIDs. 
+   @author All author names and NetIDs.
    Alexander Chang (apc73)
    Evan Pike (dep78)
    Tobias Ginsburg (tsg44)
