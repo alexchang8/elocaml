@@ -56,14 +56,17 @@ let create_user name pswd json_path =
 
 
 (** [valid_name name json_path] checks if the username is already taken 
-    in the file [json_path]. If so, then false is returned. 
+    in the file [json_path]. If so, then false is returned. Any name 
+    greater than 10 characters is also invalid
     Otherwise it is true. *)
 let valid_name name json_path = 
-  let json = from_file json_path in
-  let user_list = json |> member "users" |> to_list in
-  let f acc user = (user |> member "username" |> to_string)::acc in
-  let names = List.fold_left f [] user_list in
-  not (List.mem name names)
+  if String.length name > 10 then false 
+  else
+    let json = from_file json_path in
+    let user_list = json |> member "users" |> to_list in
+    let f acc user = (user |> member "username" |> to_string)::acc in
+    let names = List.fold_left f [] user_list in
+    not (List.mem name names)
 
 (** [get_assoc name json_path ] is the function that grabs the user in the 
     form of the type Yojson.Basic.json for the specified username [name] and
@@ -115,8 +118,8 @@ let update_users users updated =
   let rec helper acc lst = 
     match lst with
     | [] -> acc
-    | h::t -> 
-      if same_user h updated 
+    | h::t ->
+      if same_user h updated
       then t @ (updated::acc)
       else helper (h::acc) t
   in helper [] users

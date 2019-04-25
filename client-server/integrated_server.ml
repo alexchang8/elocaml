@@ -2,8 +2,8 @@ open Game
 module type Server = sig
   (**Runs the server for a game. The server accepts socket connections
      on the computers internal ip on port 1400.*)
-  val run : ((in_channel * out_channel * int * string) *
-             (in_channel * out_channel * int)) -> unit
+  val run : (in_channel * out_channel * int * string) ->
+    (in_channel * out_channel * int * string) -> unit
 end
 
 module MakeServer (G:Game):Server = struct
@@ -77,8 +77,9 @@ module MakeServer (G:Game):Server = struct
     Unix.sleepf 0.1;
     game_loop s' chat' conns
 
-  let run ((ic1,oc1,id1,uname1),(ic2,oc2,id2)) =
-    let uname2 = input_line ic2 in
+  let run (ic1,oc1,id1,uname1) (ic2,oc2,id2,uname2) =
+    Unix.set_nonblock (Unix.descr_of_in_channel ic1);
+    Unix.set_nonblock (Unix.descr_of_in_channel ic2);
     let conns = [{ic=ic1; oc=oc1; p_id=id1; in_chat=ref false; username=uname1};
                  {ic=ic2; oc=oc2; p_id=id2; in_chat=ref false; username=uname2}] in
     game_loop (G.init_state) (Chat.init_state) conns

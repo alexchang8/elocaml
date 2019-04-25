@@ -18,7 +18,7 @@ let get_new_connections sock n =
 
 let next_lobby_state s conn =
   match input_line conn.ic with
-  | x -> Lobbyview.next_state s conn.p_id (Tools.parse_backspace x)
+  | x -> Lobbyview.next_state s conn.p_id conn.oc (Tools.parse_backspace x)
   | exception Sys_blocked_io -> s
   | exception _ -> Lobbyview.remove_client_id s conn.p_id
 (**TODO: IMPORTANT: deal with client disconnection *)
@@ -27,12 +27,14 @@ let rec game_loop (s:Lobbyview.t) (conns:connnection list) sock n =
   let new_conns, n' = get_new_connections sock n in
   let conns' = List.rev_append new_conns conns in
   let s' = (
-    let init_new_c = List.fold_left (fun acc c -> Lobbyview.next_state s c.p_id "") s new_conns in
+    let init_new_c = List.fold_left (fun acc c -> Lobbyview.next_state s c.p_id c.oc "") s new_conns in
     List.fold_left next_lobby_state init_new_c conns')
   in
   let alive_conns = List.filter (fun c -> not (List.mem c.p_id (Lobbyview.get_dced s'))) conns' in
-  List.iter(fun c -> Lobbyview.print_player_state c.p_id s' ^ "\nEND_OF_FILE\n" |> output_string c.oc;
-             flush c.oc) alive_conns;
+  List.iter(fun c ->
+      let view = Lobbyview.print_player_state c.p_id s' in
+      if view <> "" then
+        view ^ "\nEND_OF_FILE\n" |> output_string c.oc; flush c.oc) alive_conns;
   let s_resolved = Lobbyview.flush_dced s' in
   Unix.sleepf 0.1;
   game_loop s_resolved alive_conns sock n'
