@@ -229,8 +229,8 @@ let restore_stars b =
 (**[update_error t p_id e] returns the game state [t], but with an added
    error message for the player [p_id]*)
 let update_error t p_id e =
-  if p_id = 0 then {t with b_error = t.b_error ^ "\n" ^ e}
-  else {t with w_error = t.w_error ^ "\n" ^ e}
+  if p_id = 0 then {t with b_error = "\n" ^ e}
+  else {t with w_error = "\n" ^ e}
 
 (**[score t] returns a string containing the score of white and black in a given
    game t. Territory scoring is used. A color owns a territory if through any possible

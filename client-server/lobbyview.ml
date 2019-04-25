@@ -61,6 +61,7 @@ let create_cb ((x,y):int*int) x1 x2 y1 y2 cv mouse_cbs overlay_string page t id 
   else None
 
 module GoServer = Integrated_server.MakeServer(Go)
+module BshipServer = Integrated_server.MakeServer(Battleship)
 
 let start_go_server (x,y) (id,cv) t =
   if x>=20 && x<=38 && y >=15 && y<=18 then begin
@@ -71,6 +72,23 @@ let start_go_server (x,y) (id,cv) t =
     (**TODO: we need to update lobbies also*)
     let lobbystatus = Waiting(GoServer.run (ic1, cv.oc, 0, cv.username)) in
     let lobby = {game="Go"; players = 1; max_p = 2; host = cv.username;
+                 lobbystatus = lobbystatus; client_ids = [id]} in
+    (**TODO: should probably add a way to wait/cancel the lobby*)
+    let new_cv = {cv with mouse_cbs = []; overlay_string = ""; in_lobby = true;
+                          page = Lobby; ocs = oc1::cv.ocs} in
+    Some(update_client t id new_cv |> fun st -> {st with lobbies = lobby::List.rev st.lobbies |> List.rev})
+  end
+  else None
+
+let start_bship_server (x,y) (id,cv) t =
+  if x>=40 && x<=58 && y >=15 && y<=18 then begin
+    print_endline "starting battleship server!";
+    let ic1,oc1 =
+      let f1,f2 =  Unix.pipe () in
+      (Unix.in_channel_of_descr f1, Unix.out_channel_of_descr f2) in
+    (**TODO: we need to update lobbies also*)
+    let lobbystatus = Waiting(BshipServer.run (ic1, cv.oc, 0, cv.username)) in
+    let lobby = {game="Bship"; players = 1; max_p = 2; host = cv.username;
                  lobbystatus = lobbystatus; client_ids = [id]} in
     (**TODO: should probably add a way to wait/cancel the lobby*)
     let new_cv = {cv with mouse_cbs = []; overlay_string = ""; in_lobby = true;
@@ -112,15 +130,18 @@ let lobby_start_cb (x,y) (id,cv) t =
           | Some cv2 -> {cv2 with mouse_cbs=[]; overlay_string = ""; in_lobby = false;
                                   page = Lobby} in
         let new_lobby = {lobby with players=2; lobbystatus = Live; client_ids = id::lobby.client_ids} in
-        let new_lobbies = List.mapi (fun ind lobby -> if ind = n then new_lobby else
-                                        lobby) t.lobbies in
+        let new_lobbies = (List.fold_left (fun (acc, z) lo -> match lo.lobbystatus with
+            | Live -> (lo::acc, z)
+            | Waiting(_) when z = n -> (new_lobby::acc, z+1)
+            | Waiting(_) -> (lo::acc, z+1)) ([], 0) t.lobbies)
+                          |> fst |> List.rev in
         let removed = List.remove_assoc id t.client_views |> List.remove_assoc id2 in
         Some({t with client_views = (id,new_cv) :: (id2, new_cv2) :: removed; lobbies = new_lobbies})
     end
   else None
 
 let rec create_lobby_cb coords (id,cv) t =
-  create_cb coords 5 17 1 1 cv [cancel_lobby_cb;start_go_server] create_lobby_view (CreateLobby) t id
+  create_cb coords 5 17 1 1 cv [cancel_lobby_cb;start_go_server;start_bship_server] create_lobby_view (CreateLobby) t id
 and cancel_lobby_cb coords (id, cv) t =
   create_cb coords 18 33 23 25 cv [create_lobby_cb] "" (Lobby) t id
 
@@ -150,6 +171,7 @@ let update_page_string t cview p_id p str =
   update_client t p_id client'
 
 let next_state t p_id oc str =
+  (*print_endline str;*)
   match List.assoc_opt p_id t.client_views with
   | None -> {t with client_views = (new_client p_id oc :: t.client_views)}
   | Some client_view ->
@@ -192,7 +214,34 @@ let next_state t p_id oc str =
         | Lobby -> t
         | CreateLobby -> t
       end
-    | Some coords -> resolve_mouse_cbs (p_id, client_view) t client_view.mouse_cbs coords
+    | Some (x,y) ->
+      let ordered = List.rev client_view.ocs in
+      if y = 1 then
+        let n = if x >= 27 && x <= 32 then -1
+          else if x >= 34 && x <= 40 then 0
+          else if x >= 42 && x <= 48 then 1
+          else if x >= 50 && x <= 56 then 2
+          else -2 in
+        if n = -2 then resolve_mouse_cbs (p_id, client_view) t client_view.mouse_cbs (x,y)
+        else if n = -1 then begin
+          List.iter (fun game_oc -> output_string game_oc "\n__DISABLE__\n"; flush game_oc) client_view.ocs;
+          let new_client = {client_view with in_lobby = true; overlay_string = "";
+                                             mouse_cbs = [create_lobby_cb; lobby_start_cb]} in
+          update_client t p_id new_client
+        end
+        else if n >= 0 && n < List.length ordered then
+          let active_oc = List.nth ordered n in
+          List.iter (fun game_oc -> output_string game_oc "\n__DISABLE__\n"; flush game_oc) client_view.ocs;
+          output_string active_oc "\n__ENABLE__\n";
+          flush active_oc;
+          let new_client = {client_view with in_lobby = false; overlay_string = "";
+                                             mouse_cbs = []} in
+          update_client t p_id new_client
+        else
+          resolve_mouse_cbs (p_id, client_view) t client_view.mouse_cbs (x,y)
+
+      else
+        resolve_mouse_cbs (p_id, client_view) t client_view.mouse_cbs (x,y)
 
 let lobbystrings lst =
   (**todo: format host name nicely*)
@@ -212,7 +261,7 @@ let print_player_state p_id t =
   | Some cv ->
     (**TODO: print lobbies you are in and llbbies you could join*)
     if cv.in_lobby then begin
-      " ⏻ |Create Lobby |                | Ladder |                  user: " ^ cv.username ^ "\n\n" ^
+      "   |Create Lobby |       | Home | Tab 1 | Tab 2 | Tab 3 |        user: " ^ cv.username ^ "\n\n" ^
       Gui.centered ^ "\n\n" ^ "    Game                            Host                          Players         "
       ^ "\n────────────────────────────────────────────────────────────────────────────────\n"
       ^ lobbystrings t.lobbies

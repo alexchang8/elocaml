@@ -1,5 +1,5 @@
 let max_players = 2
-let port = 1400
+let port = 1401
 
 
 let init_state = ""
