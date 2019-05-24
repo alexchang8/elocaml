@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Integrated_server.html">
+<link rel="next" href="Server.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Command" rel="Chapter" href="Command.html">
+<link title="Player" rel="Chapter" href="Player.html">
+<link title="Chat" rel="Chapter" href="Chat.html">
+<link title="Client" rel="Chapter" href="Client.html">
+<link title="Gui" rel="Chapter" href="Gui.html">
+<link title="Integrated_server" rel="Chapter" href="Integrated_server.html">
+<link title="Lobbyview" rel="Chapter" href="Lobbyview.html">
+<link title="Server" rel="Chapter" href="Server.html">
+<link title="Tools" rel="Chapter" href="Tools.html">
+<link title="User" rel="Chapter" href="User.html"><title>Lobbyview</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Integrated_server.html" title="Integrated_server">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Server.html" title="Server">Next</a>
+</div>
+<h1>Module <a href="type_Lobbyview.html">Lobbyview</a></h1>
+
+<pre><span id="MODULELobbyview"><span class="keyword">module</span> Lobbyview</span>: <code class="code">sig</code> <a href="Lobbyview.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>The module holding gui strings and logic for the lobby interface</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>The abstract type representing a lobby view</p>
+</div>
+</div>
+
+
+<pre><span id="VALnext_state"><span class="keyword">val</span> next_state</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> int -> Pervasives.out_channel -> string -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">next_state t p_id oc s</code> returns <code class="code">t</code> after a client
+   inputs <code class="code">s</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALremove_client_id"><span class="keyword">val</span> remove_client_id</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> int -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">remove_client_id t p_id</code> returns <code class="code">t</code> after the client corresponding
+   to <code class="code">p_id</code> is removed from the state.</p>
+</div>
+</div>
+
+<pre><span id="VALget_dced"><span class="keyword">val</span> get_dced</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> int list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">remove_client_id t p_id</code> gets a list of the p_ids which are disconnected
+   from the lobby</p>
+</div>
+</div>
+
+<pre><span id="VALprint_player_state"><span class="keyword">val</span> print_player_state</span> : <code class="type">int -> <a href="Lobbyview.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_player_state p_id t</code> returns a string corresponding to a player
+   <code class="code">p_id</code>'s view of the lobby</p>
+</div>
+</div>
+
+<pre><span id="VALflush_dced"><span class="keyword">val</span> flush_dced</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_dced</code> will return [] after this is called on the returned state</p>
+</div>
+</div>
+
+<pre><span id="VALinit_state"><span class="keyword">val</span> init_state</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>The state with no client connections</p>
+</div>
+</div>
+</body></html>

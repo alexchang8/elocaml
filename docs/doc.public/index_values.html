@@ -1,0 +1,366 @@
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Command" rel="Chapter" href="Command.html">
+<link title="Player" rel="Chapter" href="Player.html">
+<link title="Chat" rel="Chapter" href="Chat.html">
+<link title="Client" rel="Chapter" href="Client.html">
+<link title="Gui" rel="Chapter" href="Gui.html">
+<link title="Integrated_server" rel="Chapter" href="Integrated_server.html">
+<link title="Lobbyview" rel="Chapter" href="Lobbyview.html">
+<link title="Server" rel="Chapter" href="Server.html">
+<link title="Tools" rel="Chapter" href="Tools.html">
+<link title="User" rel="Chapter" href="User.html"><title>Index of values</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Index of values</h1>
+<table>
+<tr><td align="left"><div>A</div></td></tr>
+<tr><td><a href="Player.html#VALalready_guessed">already_guessed</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">already_guessed board (c1, c2)</code> is the function that determines if cell
+    <code class="code">(c1, c2)</code> has previously been guessed by a user.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>C</div></td></tr>
+<tr><td><a href="Gui.html#VALcentered">centered</a> [<a href="Gui.html">Gui</a>]</td>
+<td><div class="info">
+<p>string for the colored logo ELOCAML</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Player.html#VALcheck">check</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">check p (c1, c2)</code> returns the new player with the coordinate (c1, c2)
+    updated to represent the player's guess and the current player <code class="code">p</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Command.html#VALcheck_list_form">check_list_form</a> [<a href="Command.html">Command</a>]</td>
+<td><div class="info">
+<p><code class="code">check_list_form t</code> returns true if the list has the form of either 1 or 2
+   sets of coordinates, e.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Command.html#VALcheck_string_form">check_string_form</a> [<a href="Command.html">Command</a>]</td>
+<td><div class="info">
+<p><code class="code">check_string_form target</code> returns true if the string has the form of 1 set
+    of coordinates, e.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="User.html#VALcreate_user">create_user</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">create_user name pswd json_path</code> creates a new user to store in the
+    specified path <code class="code">json_path</code>.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>D</div></td></tr>
+<tr><td><a href="Gui.html#VALdraw_rect">draw_rect</a> [<a href="Gui.html">Gui</a>]</td>
+<td><div class="info">
+<p>the same as <code class="code">erase_square</code>, except the borders of the rectangle are
+   replaced with lines to form a box</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>E</div></td></tr>
+<tr><td><a href="Gui.html#VALerase_square">erase_square</a> [<a href="Gui.html">Gui</a>]</td>
+<td><div class="info">
+<p><code class="code">set_cursor x1 y1 x2 y2</code> returns a string which when printed will
+   erase the rectangle with top left <code class="code">(x1,y1)</code>, and bottom left <code class="code">(x2, y2)</code>.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>F</div></td></tr>
+<tr><td><a href="Lobbyview.html#VALflush_dced">flush_dced</a> [<a href="Lobbyview.html">Lobbyview</a>]</td>
+<td><div class="info">
+<p><code class="code">get_dced</code> will return [] after this is called on the returned state</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>G</div></td></tr>
+<tr><td><a href="Player.html#VALget_board">get_board</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">get_board p</code> returns the board of the current player <code class="code">p</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Lobbyview.html#VALget_dced">get_dced</a> [<a href="Lobbyview.html">Lobbyview</a>]</td>
+<td><div class="info">
+<p><code class="code">remove_client_id t p_id</code> gets a list of the p_ids which are disconnected
+   from the lobby</p>
+
+</div>
+</td></tr>
+<tr><td><a href="User.html#VALget_elo">get_elo</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">get_elo user</code> returns the elo rating of the <code class="code">user</code></p>
+
+</div>
+</td></tr>
+<tr><td><a href="User.html#VALget_losses">get_losses</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">get_losses user</code> returns the number of losses of the <code class="code">user</code></p>
+
+</div>
+</td></tr>
+<tr><td><a href="Player.html#VALget_name">get_name</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">get_name p</code> returns the name of the current player <code class="code">p</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="User.html#VALget_pswd">get_pswd</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">get_pswd user</code> returns the password of the <code class="code">user</code></p>
+
+</div>
+</td></tr>
+<tr><td><a href="Player.html#VALget_shape">get_shape</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">get_shape p</code> returns the shape of the current player's <code class="code">p</code> board.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Player.html#VALget_ships">get_ships</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">get_ships p</code> returns the ships of the current player <code class="code">p</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="User.html#VALget_username">get_username</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">get_username user</code> returns the username of the <code class="code">user</code></p>
+
+</div>
+</td></tr>
+<tr><td><a href="User.html#VALget_wins">get_wins</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">get_wins user</code> returns the number of wins for the <code class="code">user</code></p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>H</div></td></tr>
+<tr><td><a href="Authors.html#VALhours_worked">hours_worked</a> [<a href="Authors.html">Authors</a>]</td>
+<td><div class="info">
+<p><code class="code">hours_worked</code> is a list of the number of hours each team member
+    worked on this assignment.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>I</div></td></tr>
+<tr><td><a href="User.html#VALincr_loser">incr_loser</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">incr_loser loser json_path</code> increments the losses field of the username
+    <code class="code">loser</code> and updates the json file at <code class="code">json_path</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="User.html#VALincr_winner">incr_winner</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">incr_winner winner json_path</code> increments the wins field of the username 
+    <code class="code">winner</code> and updates the json file at <code class="code">json_path</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Player.html#VALinit_player">init_player</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">init_player x y name</code> initializes an new player containing an empty board
+    of size (<code class="code">x</code>, <code class="code">y</code>), an empty ship array, and the board's shape (<code class="code">x</code>, <code class="code">y</code>).</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Lobbyview.html#VALinit_state">init_state</a> [<a href="Lobbyview.html">Lobbyview</a>]</td>
+<td><div class="info">
+<p>The state with no client connections</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Chat.html#VALinit_state">init_state</a> [<a href="Chat.html">Chat</a>]</td>
+<td><div class="info">
+<p>the empty chat</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Player.html#VALinsert_ship">insert_ship</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">insert_ship player start_cord end_cord size</code> inserts a ship given the
+    starting and ending coordinates of the ship (<code class="code">start_cord</code> and <code class="code">end_cord</code>)
+    to the current players board and returns an updated player.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Tools.html#VALis_chat_click">is_chat_click</a> [<a href="Tools.html">Tools</a>]</td>
+<td><div class="info">
+<p><code class="code">split_view_string s1 s2</code> returns a single string where <code class="code">s1</code> is printed on the
+   left and <code class="code">s2</code> is printed on the right.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Tools.html#VALis_mouse_click">is_mouse_click</a> [<a href="Tools.html">Tools</a>]</td>
+<td><div class="info">
+<p><code class="code">is_mouse_click</code> returns <code class="code">Some(x,y)</code> if s is
+   "mouse x y" where x and y are integers.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>L</div></td></tr>
+<tr><td><a href="User.html#VALlogin">login</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">login name pswd json_path</code> checks that the current username <code class="code">name</code> and 
+    corresponding password <code class="code">pswd</code> are in the database at <code class="code">json_path</code>.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>M</div></td></tr>
+<tr><td><a href="Player.html#VALmake_coord">make_coord</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">make_coord (a,b)</code> boxes the coordinate (a,b) into a coord of the same
+    coordinates.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>N</div></td></tr>
+<tr><td><a href="Tools.html#VALn_builder">n_builder</a> [<a href="Tools.html">Tools</a>]</td>
+<td></td></tr>
+<tr><td><a href="Tools.html#VALn_spacer">n_spacer</a> [<a href="Tools.html">Tools</a>]</td>
+<td><div class="info">
+<p><code class="code">n_spacer n</code> returns a string of <code class="code">n</code> whitespaces</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Lobbyview.html#VALnext_state">next_state</a> [<a href="Lobbyview.html">Lobbyview</a>]</td>
+<td><div class="info">
+<p><code class="code">next_state t p_id oc s</code> returns <code class="code">t</code> after a client
+   inputs <code class="code">s</code>.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Chat.html#VALnext_state">next_state</a> [<a href="Chat.html">Chat</a>]</td>
+<td><div class="info">
+<p><code class="code">next_state s t</code> returns the state of the chat after <code class="code">s</code> is inserted
+   into the chat</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>P</div></td></tr>
+<tr><td><a href="Command.html#VALparse">parse</a> [<a href="Command.html">Command</a>]</td>
+<td><div class="info">
+<p><code class="code">parse string</code> takes in a string and returns the corresponding command, based on the form of the string, if it is place A1 A2, it will be a place with those two coordinates
+    if its print me it will be a print me, and so on.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Tools.html#VALparse_backspace">parse_backspace</a> [<a href="Tools.html">Tools</a>]</td>
+<td><div class="info">
+<p><code class="code">sem_backs s</code> returns s, where the string sequence "\b \b" deletes the
+   preceding character.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Chat.html#VALprint_chat">print_chat</a> [<a href="Chat.html">Chat</a>]</td>
+<td><div class="info">
+<p><code class="code">print_chat t</code> returns a string that represents a properly formatted
+   view of chat</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Player.html#VALprint_my_board">print_my_board</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">print_my_board t</code> returns a string corresponding to a complete view
+   of <code class="code">t</code>'s board</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Gui.html#VALprint_object_tl">print_object_tl</a> [<a href="Gui.html">Gui</a>]</td>
+<td><div class="info">
+<p><code class="code">print_object_tl x y s</code> returns a string which will move
+   a users cursor to print <code class="code">s</code> at <code class="code">(x,y)</code> in the terminal</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Player.html#VALprint_opp_board">print_opp_board</a> [<a href="Player.html">Player</a>]</td>
+<td><div class="info">
+<p><code class="code">print_my_board t</code> returns a string corresponding to a view of <code class="code">t</code>'s board
+   without ships</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Lobbyview.html#VALprint_player_state">print_player_state</a> [<a href="Lobbyview.html">Lobbyview</a>]</td>
+<td><div class="info">
+<p><code class="code">print_player_state p_id t</code> returns a string corresponding to a player
+   <code class="code">p_id</code>'s view of the lobby</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>R</div></td></tr>
+<tr><td><a href="Lobbyview.html#VALremove_client_id">remove_client_id</a> [<a href="Lobbyview.html">Lobbyview</a>]</td>
+<td><div class="info">
+<p><code class="code">remove_client_id t p_id</code> returns <code class="code">t</code> after the client corresponding
+   to <code class="code">p_id</code> is removed from the state.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Tools.html#VALremove_mouse">remove_mouse</a> [<a href="Tools.html">Tools</a>]</td>
+<td><div class="info">
+<p><code class="code">remove_mouse s</code> returns <code class="code">s</code> with any substrings matching
+   mouse <code class="code">0-9</code>+ <code class="code">0-9</code>+ removed.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Server.Server.html#VALrun">run</a> [<a href="Server.Server.html">Server.Server</a>]</td>
+<td><div class="info">
+<p>Runs the server for a game.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Integrated_server.Server.html#VALrun">run</a> [<a href="Integrated_server.Server.html">Integrated_server.Server</a>]</td>
+<td><div class="info">
+<p><code class="code">run (ic1,oc1,id1,uname1) (ic2,oc2,id2,uname2)</code> starts
+     a game where commands are received from <code class="code">ic1</code> and <code class="code">ic2</code> and
+     output to <code class="code">oc1</code> and <code class="code">oc2</code> between users.</p>
+
+</div>
+</td></tr>
+<tr><td><a href="Client.html#VALrun">run</a> [<a href="Client.html">Client</a>]</td>
+<td></td></tr>
+<tr><td align="left"><div>S</div></td></tr>
+<tr><td><a href="Gui.html#VALset_cursor">set_cursor</a> [<a href="Gui.html">Gui</a>]</td>
+<td><div class="info">
+<p><code class="code">set_cursor x y</code> returns the ANSI escape sequence as a string which
+   when printed, sets the terminals cursor to <code class="code">x</code> <code class="code">y</code></p>
+
+</div>
+</td></tr>
+<tr><td><a href="Tools.html#VALsplit_view_string">split_view_string</a> [<a href="Tools.html">Tools</a>]</td>
+<td><div class="info">
+<p><code class="code">is_chat_click s</code> returns <code class="code">`Chat_click</code> if <code class="code">s</code> is a string representing
+   a mouse click on the left side of the screen.</p>
+
+</div>
+</td></tr>
+<tr><td align="left"><div>V</div></td></tr>
+<tr><td><a href="User.html#VALvalid_name">valid_name</a> [<a href="User.html">User</a>]</td>
+<td><div class="info">
+<p><code class="code">valid_name name json_path</code> checks if the username is already taken 
+    in the file <code class="code">json_path</code>.</p>
+
+</div>
+</td></tr>
+</table>
+</body>
+</html>

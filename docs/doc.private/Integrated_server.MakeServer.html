@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="Up" href="Integrated_server.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Game" rel="Chapter" href="Game.html">
+<link title="Go" rel="Chapter" href="Go.html">
+<link title="Go_server" rel="Chapter" href="Go_server.html">
+<link title="Battleship" rel="Chapter" href="Battleship.html">
+<link title="Battleship_server" rel="Chapter" href="Battleship_server.html">
+<link title="Command" rel="Chapter" href="Command.html">
+<link title="Player" rel="Chapter" href="Player.html">
+<link title="Chat" rel="Chapter" href="Chat.html">
+<link title="Client" rel="Chapter" href="Client.html">
+<link title="Gui" rel="Chapter" href="Gui.html">
+<link title="Integrated_server" rel="Chapter" href="Integrated_server.html">
+<link title="Lobby" rel="Chapter" href="Lobby.html">
+<link title="Lobbyview" rel="Chapter" href="Lobbyview.html">
+<link title="Server" rel="Chapter" href="Server.html">
+<link title="Tools" rel="Chapter" href="Tools.html">
+<link title="User" rel="Chapter" href="User.html"><title>Integrated_server.MakeServer</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="Integrated_server.html" title="Integrated_server">Up</a>
+&nbsp;</div>
+<h1>Functor <a href="type_Integrated_server.MakeServer.html">Integrated_server.MakeServer</a></h1>
+
+<pre><span id="MODULEMakeServer"><span class="keyword">module</span> MakeServer</span>: <div class="sig_block"><code class="code">functor (</code><code class="code">G</code><code class="code"> : </code><code class="type"><a href="Game.Game.html">Game.Game</a></code><code class="code">) -&gt; </code><code class="code">sig</code> <a href="Integrated_server.MakeServer.html">..</a> <code class="code">end</code></div></pre><div class="info module top">
+<div class="info-desc">
+<p><code class="code">MakeServer G</code> returns a <code class="code">Server</code> using the game logic of <code class="code">G</code></p>
+</div>
+</div>
+<table border="0" cellpadding="3" width="100%">
+<tr>
+<td align="left" valign="top" width="1%%"><b>Parameters: </b></td>
+<td>
+<table class="paramstable">
+<tr>
+<td align="center" valign="top" width="15%">
+<code>G</code></td>
+<td align="center" valign="top">:</td>
+<td><code class="type"><a href="Game.Game.html">Game.Game</a></code>
+</table>
+</td>
+</tr>
+</table>
+<hr width="100%">
+
+<pre><code><span id="TYPEconnection"><span class="keyword">type</span> <code class="type"></code>connection</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTconnection.ic">ic</span>&nbsp;: <code class="type">Pervasives.in_channel</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTconnection.oc">oc</span>&nbsp;: <code class="type">Pervasives.out_channel</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTconnection.p_id">p_id</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTconnection.in_chat">in_chat</span>&nbsp;: <code class="type">bool Pervasives.ref</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTconnection.username">username</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTconnection.enabled">enabled</span>&nbsp;: <code class="type">bool Pervasives.ref</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+<div class="info-desc">
+<p>the type representing a client connection to this server</p>
+</div>
+</div>
+
+
+<pre><span id="VALc_next_state"><span class="keyword">val</span> c_next_state</span> : <code class="type">G.t * <a href="Chat.html#TYPEt">Chat.t</a> -> <a href="Integrated_server.MakeServer.html#TYPEconnection">connection</a> -> G.t * <a href="Chat.html#TYPEt">Chat.t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">c_next_state s conn</code> reads an input line from a particular client,
+     and if available returns the result of parsing the line and finding the next
+     state. Returns <code class="code">s</code> if no input line is available</p>
+</div>
+</div>
+
+<pre><span id="VALrterm"><span class="keyword">val</span> rterm</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p>The string which when printed resizes the terminal to the coordinates
+     in G.terminal_size</p>
+</div>
+</div>
+
+<pre><span id="VALgame_loop"><span class="keyword">val</span> game_loop</span> : <code class="type">G.t -> <a href="Chat.html#TYPEt">Chat.t</a> -> <a href="Integrated_server.MakeServer.html#TYPEconnection">connection</a> list -> 'a</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">game_loop s conns</code> continuously reads all of the input channels in <code class="code">conns</code>
+     for input lines, and parses each of them into a command, and storing the mutated
+     game state in sequence. If there are multiple connections with pending buffers,
+     the order of this sequence is not gauranteed. This function will never terminate properly.</p>
+</div>
+</div>
+
+<pre><span id="VALrun"><span class="keyword">val</span> run</span> : <code class="type">Pervasives.in_channel * Pervasives.out_channel * int * string -><br>       Pervasives.in_channel * Pervasives.out_channel * int * string -> 'a</code></pre></body></html>

@@ -1,0 +1,503 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Lobby.html">
+<link rel="next" href="Server.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Game" rel="Chapter" href="Game.html">
+<link title="Go" rel="Chapter" href="Go.html">
+<link title="Go_server" rel="Chapter" href="Go_server.html">
+<link title="Battleship" rel="Chapter" href="Battleship.html">
+<link title="Battleship_server" rel="Chapter" href="Battleship_server.html">
+<link title="Command" rel="Chapter" href="Command.html">
+<link title="Player" rel="Chapter" href="Player.html">
+<link title="Chat" rel="Chapter" href="Chat.html">
+<link title="Client" rel="Chapter" href="Client.html">
+<link title="Gui" rel="Chapter" href="Gui.html">
+<link title="Integrated_server" rel="Chapter" href="Integrated_server.html">
+<link title="Lobby" rel="Chapter" href="Lobby.html">
+<link title="Lobbyview" rel="Chapter" href="Lobbyview.html">
+<link title="Server" rel="Chapter" href="Server.html">
+<link title="Tools" rel="Chapter" href="Tools.html">
+<link title="User" rel="Chapter" href="User.html"><title>Lobbyview</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Lobby.html" title="Lobby">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Server.html" title="Server">Next</a>
+</div>
+<h1>Module <a href="type_Lobbyview.html">Lobbyview</a></h1>
+
+<pre><span id="MODULELobbyview"><span class="keyword">module</span> Lobbyview</span>: <code class="code">sig</code> <a href="Lobbyview.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>the type representing a logged in client</p>
+
+<p>The module holding gui strings and logic for the lobby interface</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><code><span id="TYPEactive_client"><span class="keyword">type</span> <code class="type"></code>active_client</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTactive_client.in_game">in_game</span>&nbsp;: <code class="type">bool</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTactive_client.elo">elo</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEstatus"><span class="keyword">type</span> <code class="type"></code>status</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatus.LoggedOut"><span class="constructor">LoggedOut</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatus.LoggedIn"><span class="constructor">LoggedIn</span></span> <span class="keyword">of</span> <code class="type"><a href="Lobbyview.html#TYPEactive_client">active_client</a></code></code></td>
+
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p>the type representing the status of a client</p>
+</div>
+</div>
+
+
+<pre><code><span id="TYPEloginstage"><span class="keyword">type</span> <code class="type"></code>loginstage</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTloginstage.EmptyForm"><span class="constructor">EmptyForm</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTloginstage.Username"><span class="constructor">Username</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p>the type representing the state of a client logging into a server</p>
+</div>
+</div>
+
+
+<pre><code><span id="TYPEpage"><span class="keyword">type</span> <code class="type"></code>page</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTpage.Login"><span class="constructor">Login</span></span> <span class="keyword">of</span> <code class="type"><a href="Lobbyview.html#TYPEloginstage">loginstage</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTpage.CreateAccount"><span class="constructor">CreateAccount</span></span> <span class="keyword">of</span> <code class="type"><a href="Lobbyview.html#TYPEloginstage">loginstage</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTpage.Lobby"><span class="constructor">Lobby</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTpage.CreateLobby"><span class="constructor">CreateLobby</span></span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>the type representing the state of a user created lobby</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p>the type representing a oa</p>
+</div>
+</div>
+
+
+<pre><code><span id="TYPElobbystatus"><span class="keyword">type</span> <code class="type"></code>lobbystatus</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlobbystatus.Live"><span class="constructor">Live</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlobbystatus.Waiting"><span class="constructor">Waiting</span></span> <span class="keyword">of</span> <code class="type">(Pervasives.in_channel * Pervasives.out_channel * int * string -> unit)</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+<div class="info-desc">
+<p>the type holding all information about a particular lobby</p>
+</div>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+
+
+<pre><code><span id="TYPElobby"><span class="keyword">type</span> <code class="type"></code>lobby</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlobby.game">game</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlobby.players">players</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlobby.max_p">max_p</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlobby.host">host</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlobby.lobbystatus">lobbystatus</span>&nbsp;: <code class="type"><a href="Lobbyview.html#TYPElobbystatus">lobbystatus</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTlobby.client_ids">client_ids</span>&nbsp;: <code class="type">int list</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEclient_view"><span class="keyword">type</span> <code class="type"></code>client_view</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTclient_view.oc">oc</span>&nbsp;: <code class="type">Pervasives.out_channel</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTclient_view.mouse_cbs">mouse_cbs</span>&nbsp;: <code class="type"><a href="Lobbyview.html#TYPEmouse_cb">mouse_cb</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTclient_view.overlay_string">overlay_string</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTclient_view.username">username</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTclient_view.status">status</span>&nbsp;: <code class="type"><a href="Lobbyview.html#TYPEstatus">status</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTclient_view.page">page</span>&nbsp;: <code class="type"><a href="Lobbyview.html#TYPEpage">page</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTclient_view.ocs">ocs</span>&nbsp;: <code class="type">Pervasives.out_channel list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTclient_view.in_lobby">in_lobby</span>&nbsp;: <code class="type">bool</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+<div class="info-desc">
+<p>the type holding all information about a particular client.</p>
+</div>
+</div>
+
+
+<pre><span id="TYPEmouse_cb"><span class="keyword">type</span> <code class="type"></code>mouse_cb</span> = <code class="type">int * int -> int * <a href="Lobbyview.html#TYPEclient_view">client_view</a> -> <a href="Lobbyview.html#TYPEt">t</a> -> <a href="Lobbyview.html#TYPEt">t</a> option</code> </pre>
+
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.client_views">client_views</span>&nbsp;: <code class="type">(int * <a href="Lobbyview.html#TYPEclient_view">client_view</a>) list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.lobbies">lobbies</span>&nbsp;: <code class="type"><a href="Lobbyview.html#TYPElobby">lobby</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.dced">dced</span>&nbsp;: <code class="type">int list</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+<div class="info-desc">
+<p>The abstract type representing a lobby view</p>
+</div>
+</div>
+
+
+<pre><span id="VALget_dced"><span class="keyword">val</span> get_dced</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> int list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">remove_client_id t p_id</code> gets a list of the p_ids which are disconnected
+   from the lobby</p>
+</div>
+</div>
+
+<pre><span id="VALremove_client_id"><span class="keyword">val</span> remove_client_id</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> int -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">remove_client_id t p_id</code> returns <code class="code">t</code> after the client corresponding
+   to <code class="code">p_id</code> is removed from the state.</p>
+</div>
+</div>
+
+<pre><span id="VALflush_dced"><span class="keyword">val</span> flush_dced</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_dced</code> will return [] after this is called on the returned state</p>
+</div>
+</div>
+
+<pre><span id="VALaccount_template"><span class="keyword">val</span> account_template</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p>The string that draws the login gui</p>
+</div>
+</div>
+
+<pre><span id="VALlogin_template"><span class="keyword">val</span> login_template</span> : <code class="type">string -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p>The string that draws the login gui with <code class="code">uname</code> entered in the login field</p>
+</div>
+</div>
+
+<pre><span id="VALcreate_account"><span class="keyword">val</span> create_account</span> : <code class="type">string -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p>The string that draws the create account gui with <code class="code">uname</code> entered in the login field</p>
+</div>
+</div>
+
+<pre><span id="VALcreate_lobby_view"><span class="keyword">val</span> create_lobby_view</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p>The string that draws the gui for creating a game lobby</p>
+</div>
+</div>
+
+<pre><span id="VALlogin_user_cursor"><span class="keyword">val</span> login_user_cursor</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p>The string corresponding to the ANSI escape sequence to set a users
+   cursor at the beginning of the login field</p>
+</div>
+</div>
+
+<pre><span id="VALupdate_client_view"><span class="keyword">val</span> update_client_view</span> : <code class="type"><a href="Lobbyview.html#TYPEclient_view">client_view</a> -><br>       int -><br>       (int * <a href="Lobbyview.html#TYPEclient_view">client_view</a>) list -> (int * <a href="Lobbyview.html#TYPEclient_view">client_view</a>) list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">update_client_view cview id cvlist</code> returns cvlist with
+   the pair corresponding to <code class="code">id</code> removed, and <code class="code">(id, cview)</code> added</p>
+</div>
+</div>
+
+<pre><span id="VALupdate_client"><span class="keyword">val</span> update_client</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> int -> <a href="Lobbyview.html#TYPEclient_view">client_view</a> -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">update_client t p_id new_client</code> returns t with the client view corresponding
+   to <code class="code">p_id</code> changed to <code class="code">new_client</code></p>
+</div>
+</div>
+
+<pre><span id="VALcreate_cb"><span class="keyword">val</span> create_cb</span> : <code class="type">int * int -><br>       int -><br>       int -><br>       int -><br>       int -><br>       <a href="Lobbyview.html#TYPEclient_view">client_view</a> -><br>       <a href="Lobbyview.html#TYPEmouse_cb">mouse_cb</a> list -><br>       string -> <a href="Lobbyview.html#TYPEpage">page</a> -> <a href="Lobbyview.html#TYPEt">t</a> -> int -> <a href="Lobbyview.html#TYPEt">t</a> option</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">create_cb coords x1 x2 y1 y2 cv mouse_cbs overlay_string page t id</code> returns a
+   <code class="code">mouse_cb</code>, such that when a use clicks in the rectangle spanned by <code class="code">x1 x2 y1 y2</code>,
+   <code class="code">t</code> is updated to change the client view of <code class="code">id</code> changed to have
+   <code class="code">mouse_cbs</code>, <code class="code">overlay_string</code>, and <code class="code">page</code></p>
+</div>
+</div>
+
+<pre><span id="MODULEGoServer"><span class="keyword">module</span> <a href="Lobbyview.GoServer.html">GoServer</a></span>: <code class="type"><a href="Integrated_server.MakeServer.html">Integrated_server.MakeServer</a></code><code class="code">(</code><code class="type"><a href="Go.html">Go</a></code><code class="code">)</code></pre><div class="info">
+<p>The module holding the integrated go server logic</p>
+
+</div>
+
+<pre><span id="MODULEBshipServer"><span class="keyword">module</span> <a href="Lobbyview.BshipServer.html">BshipServer</a></span>: <code class="type"><a href="Integrated_server.MakeServer.html">Integrated_server.MakeServer</a></code><code class="code">(</code><code class="type"><a href="Battleship.html">Battleship</a></code><code class="code">)</code></pre><div class="info">
+<p>The module holding the integrated battle ship server logic</p>
+
+</div>
+
+<pre><span id="VALstart_go_server"><span class="keyword">val</span> start_go_server</span> : <code class="type">int * int -> int * <a href="Lobbyview.html#TYPEclient_view">client_view</a> -> <a href="Lobbyview.html#TYPEt">t</a> -> <a href="Lobbyview.html#TYPEt">t</a> option</code></pre><div class="info ">
+<div class="info-desc">
+<p>the mouse callback corresponding to a user creating a go server lobby</p>
+</div>
+</div>
+
+<pre><span id="VALstart_bship_server"><span class="keyword">val</span> start_bship_server</span> : <code class="type">int * int -> int * <a href="Lobbyview.html#TYPEclient_view">client_view</a> -> <a href="Lobbyview.html#TYPEt">t</a> -> <a href="Lobbyview.html#TYPEt">t</a> option</code></pre><div class="info ">
+<div class="info-desc">
+<p>the mouse callback corresponding to a user creating a battle ship lobby</p>
+</div>
+</div>
+
+<pre><span id="VALpending_lobbies"><span class="keyword">val</span> pending_lobbies</span> : <code class="type"><a href="Lobbyview.html#TYPElobby">lobby</a> list -> <a href="Lobbyview.html#TYPElobby">lobby</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">pending_lobbies lst</code> returns <code class="code">lst</code> with any lobbies with <code class="code">live</code> status
+   removed</p>
+</div>
+</div>
+
+<pre><span id="VALlobby_start_cb"><span class="keyword">val</span> lobby_start_cb</span> : <code class="type">int * int -> int * <a href="Lobbyview.html#TYPEclient_view">client_view</a> -> <a href="Lobbyview.html#TYPEt">t</a> -> <a href="Lobbyview.html#TYPEt">t</a> option</code></pre><div class="info ">
+<div class="info-desc">
+<p>The callback corresponding to a user joining an existing lobby. This starts
+   a new process which runs the server. The input channel of those clients are forwarded
+   to the new server. The lobby is also removed from the available lobbies</p>
+</div>
+</div>
+
+<pre><span id="VALcreate_lobby_cb"><span class="keyword">val</span> create_lobby_cb</span> : <code class="type"><a href="Lobbyview.html#TYPEmouse_cb">mouse_cb</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>the mouse callback for when create_lobby is clicked</p>
+</div>
+</div>
+
+<pre><span id="VALcancel_lobby_cb"><span class="keyword">val</span> cancel_lobby_cb</span> : <code class="type"><a href="Lobbyview.html#TYPEmouse_cb">mouse_cb</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>the mouse callback for when cancel is clicked in the create lobby menu</p>
+</div>
+</div>
+
+<pre><span id="VALlogin_cb"><span class="keyword">val</span> login_cb</span> : <code class="type"><a href="Lobbyview.html#TYPEmouse_cb">mouse_cb</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>the mouse callback for the create account button on the login menu</p>
+</div>
+</div>
+
+<pre><span id="VALcreate_account_cb"><span class="keyword">val</span> create_account_cb</span> : <code class="type"><a href="Lobbyview.html#TYPEmouse_cb">mouse_cb</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>the mouse callback for the login button on the login menu</p>
+</div>
+</div>
+
+<pre><span id="VALnew_client"><span class="keyword">val</span> new_client</span> : <code class="type">int -> Pervasives.out_channel -> int * <a href="Lobbyview.html#TYPEclient_view">client_view</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">new_client id oc</code> represents the initial client view of a client
+   with p_id <code class="code">id</code> and output channel <code class="code">oc</code></p>
+</div>
+</div>
+
+<pre><span id="VALresolve_mouse_cbs"><span class="keyword">val</span> resolve_mouse_cbs</span> : <code class="type">int * <a href="Lobbyview.html#TYPEclient_view">client_view</a> -><br>       <a href="Lobbyview.html#TYPEt">t</a> -> <a href="Lobbyview.html#TYPEmouse_cb">mouse_cb</a> list -> int * int -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">resolve_mouse_cbs (id,cv) state mouse_cbs coords</code> returns the state after
+   <code class="code">coords</code> are clicked on the user with id <code class="code">id</code>'s screen. This is done by
+   going through their mouse callback list</p>
+</div>
+</div>
+
+<pre><span id="VALupdate_page_string"><span class="keyword">val</span> update_page_string</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -><br>       <a href="Lobbyview.html#TYPEclient_view">client_view</a> -> int -> <a href="Lobbyview.html#TYPEpage">page</a> -> string -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">update_page_string t cview p_id p str</code> returns <code class="code">t</code> with the client view
+   corresponding to <code class="code">p_id</code> changed to have page <code class="code">p</code> and overlay_string <code class="code">str</code></p>
+</div>
+</div>
+
+<pre><span id="VALnext_state"><span class="keyword">val</span> next_state</span> : <code class="type"><a href="Lobbyview.html#TYPEt">t</a> -> int -> Pervasives.out_channel -> string -> <a href="Lobbyview.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">next_state t p_id oc s</code> returns <code class="code">t</code> after a client
+   inputs <code class="code">s</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALlobbystrings"><span class="keyword">val</span> lobbystrings</span> : <code class="type"><a href="Lobbyview.html#TYPElobby">lobby</a> list -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">lobbystrings lst</code> pretty prints the lobby list for client viewing</p>
+</div>
+</div>
+
+<pre><span id="VALprint_player_state"><span class="keyword">val</span> print_player_state</span> : <code class="type">int -> <a href="Lobbyview.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_player_state p_id t</code> returns a string corresponding to a player
+   <code class="code">p_id</code>'s view of the lobby</p>
+</div>
+</div>
+</body></html>

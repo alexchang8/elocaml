@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Game.html">
+<link rel="next" href="Go_server.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Game" rel="Chapter" href="Game.html">
+<link title="Go" rel="Chapter" href="Go.html">
+<link title="Go_server" rel="Chapter" href="Go_server.html">
+<link title="Battleship" rel="Chapter" href="Battleship.html">
+<link title="Battleship_server" rel="Chapter" href="Battleship_server.html">
+<link title="Command" rel="Chapter" href="Command.html">
+<link title="Player" rel="Chapter" href="Player.html">
+<link title="Chat" rel="Chapter" href="Chat.html">
+<link title="Client" rel="Chapter" href="Client.html">
+<link title="Gui" rel="Chapter" href="Gui.html">
+<link title="Integrated_server" rel="Chapter" href="Integrated_server.html">
+<link title="Lobby" rel="Chapter" href="Lobby.html">
+<link title="Lobbyview" rel="Chapter" href="Lobbyview.html">
+<link title="Server" rel="Chapter" href="Server.html">
+<link title="Tools" rel="Chapter" href="Tools.html">
+<link title="User" rel="Chapter" href="User.html"><title>Go</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Game.html" title="Game">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Go_server.html" title="Go_server">Next</a>
+</div>
+<h1>Module <a href="type_Go.html">Go</a></h1>
+
+<pre><span id="MODULEGo"><span class="keyword">module</span> Go</span>: <code class="code">sig</code> <a href="Go.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>The type corresponding to each space on the board.
+   Star is equivalent to empty, but is added for printing the board
+   nicely.</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><code><span id="TYPEcell"><span class="keyword">type</span> <code class="type"></code>cell</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.White"><span class="constructor">White</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.Black"><span class="constructor">Black</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.Empty"><span class="constructor">Empty</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.Star"><span class="constructor">Star</span></span></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.board">board</span>&nbsp;: <code class="type"><a href="Go.html#TYPEcell">cell</a> array array</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.active_p">active_p</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.b_captured">b_captured</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.w_captured">w_captured</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.b_error">b_error</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.w_error">w_error</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.score_str">score_str</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTt.last_passed">last_passed</span>&nbsp;: <code class="type">bool</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+<div class="info-desc">
+<p>The abstract type representing a game state of go.
+   Board: a <code class="code">cell array array</code> representing the current board
+   active_p: the active <code class="code">p_id</code>
+   b_captured: the number of pieces black has captured
+   w_captured: the number of pieces white has captured
+   b_error: error messages to be sent to the player playing black
+   w_error: error messages to be sent to the player playing white
+   last_passed: true iff in the last game state the active player passed</p>
+</div>
+</div>
+
+
+<pre><span id="VALmax_players"><span class="keyword">val</span> max_players</span> : <code class="type">int</code></pre><div class="info ">
+<div class="info-desc">
+<p>Go is a 2 player game. This is read by the server functor</p>
+</div>
+</div>
+
+<pre><code><span id="TYPEcommand"><span class="keyword">type</span> <code class="type"></code>command</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcommand.Place"><span class="constructor">Place</span></span> <span class="keyword">of</span> <code class="type">(int * int)</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcommand.Pass"><span class="constructor">Pass</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcommand.Invalid"><span class="constructor">Invalid</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcommand.Ignore"><span class="constructor">Ignore</span></span></code></td>
+
+</tr></table>
+
+<div class="info ">
+<div class="info-desc">
+<p>The type corresponding to parsed strings entered by the player.
+   Place (x,y): command corresponding to a player attempting to place a stone at (x,y)
+   Pass: command corresponding to a player electing to skip their turn.
+   Invalid: any command that did not parse</p>
+</div>
+</div>
+
+
+<pre><span id="VALstars"><span class="keyword">val</span> stars</span> : <code class="type">(int * int) list</code></pre><div class="info ">
+<div class="info-desc">
+<p>The list of points that are "stars" on the board. This is purely for printing</p>
+</div>
+</div>
+
+<pre><span id="VALinit_board"><span class="keyword">val</span> init_board</span> : <code class="type"><a href="Go.html#TYPEcell">cell</a> array array</code></pre><div class="info ">
+<div class="info-desc">
+<p>A 19 x 19 board filled with <code class="code">Empty</code>, and <code class="code">Star</code> at the points in <code class="code">stars</code></p>
+</div>
+</div>
+
+<pre><span id="VALterminal_size"><span class="keyword">val</span> terminal_size</span> : <code class="type">int * int</code></pre>
+<pre><span id="VALinit_state"><span class="keyword">val</span> init_state</span> : <code class="type"><a href="Go.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p>The initial state of the game</p>
+</div>
+</div>
+
+<pre><span id="VALwhite"><span class="keyword">val</span> white</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p>escape sequence for the white stones</p>
+</div>
+</div>
+
+<pre><span id="VALblack"><span class="keyword">val</span> black</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p>escape sequence for the black stones</p>
+</div>
+</div>
+
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p>escape sequence for the empty spaces</p>
+</div>
+</div>
+
+<pre><span id="VALcell_string"><span class="keyword">val</span> cell_string</span> : <code class="type"><a href="Go.html#TYPEcell">cell</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">cell_string c</code> returns the printed symbol corresponding to <code class="code">c</code></p>
+</div>
+</div>
+
+<pre><span id="VALname"><span class="keyword">val</span> name</span> : <code class="type">string</code></pre>
+<pre><span id="VALboard_string"><span class="keyword">val</span> board_string</span> : <code class="type"><a href="Go.html#TYPEcell">cell</a> array array -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">board_string b</code> is a stringified representation of the board</p>
+</div>
+</div>
+
+<pre><span id="VALnext_p"><span class="keyword">val</span> next_p</span> : <code class="type">int -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">next_p p_id</code> returns 1 if p_id is 0, and 0 otherwise</p>
+</div>
+</div>
+
+<pre><span id="VALprint_player_state"><span class="keyword">val</span> print_player_state</span> : <code class="type"><a href="Go.html#TYPEt">t</a> -> int -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_player_state t p_id</code> returns the string corresponding to the complete
+   player view for player</p>
+</div>
+</div>
+
+<pre><span id="VALchar_in_range"><span class="keyword">val</span> char_in_range</span> : <code class="type">char -> char -> char -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Returns <code class="code">true</code> iff the character code of c is between the character code
+   of lo and up inclusive</p>
+</div>
+</div>
+
+<pre><span id="VALvalid_char_let"><span class="keyword">val</span> valid_char_let</span> : <code class="type">char -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Returns <code class="code">true</code> iff c is in A..H or c is in J..T</p>
+</div>
+</div>
+
+<pre><span id="VALvalid_single_char_num"><span class="keyword">val</span> valid_single_char_num</span> : <code class="type">char -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Returns <code class="code">true</code> iff c is in the character range 1..9</p>
+</div>
+</div>
+
+<pre><span id="VALnum_let_tup"><span class="keyword">val</span> num_let_tup</span> : <code class="type">int -> char -> int * int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">num_let_tup x l</code> Returns the board position corresponding to the number
+   x and letter l using standard Go notation. Note that the letter 'I' is skipped.</p>
+</div>
+</div>
+
+<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Go.html#TYPEcommand">command</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">parse s</code> returns the command corresponding to a string. A string corresponds
+   to pass iff it is "pass". A string corresponding to <code class="code">Place</code> is of the form
+   ax, where <code class="code">valid_char_let a</code> is <code class="code">true</code> and x is a string corresponding to a number
+   in 1..19 . Any other string is <code class="code">Invalid</code>.</p>
+</div>
+</div>
+
+<pre><span id="MODULEIntPairs"><span class="keyword">module</span> <a href="Go.IntPairs.html">IntPairs</a></span>: <code class="code">sig</code> <a href="Go.IntPairs.html">..</a> <code class="code">end</code></pre><div class="info">
+<p>Intpairs and PairsSet is taken directly from
+   https://caml.inria.fr/pub/docs/manual-ocaml/libref/Set.html</p>
+
+</div>
+
+<pre><span id="MODULEPairsSet"><span class="keyword">module</span> <a href="Go.PairsSet.html">PairsSet</a></span>: <code class="type">Set.Make</code><code class="code">(</code><code class="type"><a href="Go.IntPairs.html">IntPairs</a></code><code class="code">)</code></pre><div class="info">
+<p>Intpairs and PairsSet is taken directly from
+   https://caml.inria.fr/pub/docs/manual-ocaml/libref/Set.html</p>
+
+</div>
+
+<pre><span id="VALis_empty"><span class="keyword">val</span> is_empty</span> : <code class="type"><a href="Go.html#TYPEcell">cell</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">is_empty c</code> returns true iff c is <code class="code">Star</code> or <code class="code">Empty</code></p>
+</div>
+</div>
+
+<pre><span id="VALadj_cells"><span class="keyword">val</span> adj_cells</span> : <code class="type">int * int -> (int * int) list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">adj_cells c</code> returns a list of coordinates corresponding to cells that
+   are adjacent to <code class="code">c</code> in a 19x19 board. Adjacent cells are cells that are directly
+   above or direcly below a cell.</p>
+</div>
+</div>
+
+<pre><span id="VALfold_lefti"><span class="keyword">val</span> fold_lefti</span> : <code class="type">('a -> 'b -> int -> 'a) -> 'a -> 'b array -> 'a</code></pre><div class="info ">
+<div class="info-desc">
+<p>The same as Array.fold_left, except the first argument to <code class="code">f</code> is the index
+   of the element</p>
+</div>
+</div>
+
+<pre><span id="VALstones"><span class="keyword">val</span> stones</span> : <code class="type"><a href="Go.html#TYPEcell">cell</a> array array -> (int * int) list list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">stones b</code> returns a list of the boards equivalent stones. Equivalent stones
+   are adjacent, (not diagonal), and have the same type (with <code class="code">Star</code> and <code class="code">Empty</code> equivalent).</p>
+</div>
+</div>
+
+<pre><span id="VALliberties"><span class="keyword">val</span> liberties</span> : <code class="type"><a href="Go.html#TYPEcell">cell</a> array array -> (int * int) list -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">liberties b stone</code> returns the number of liberties of a given stone. A liberty
+   is defined as an <code class="code">Empty</code> cell adjacent to a stone. Equivalent stones share liberties.
+   Note that this possibly double counts liberties, but if it returns 0 the number of
+   liberties is gauranteed to be 0</p>
+</div>
+</div>
+
+<pre><span id="VALremove_dead_stones"><span class="keyword">val</span> remove_dead_stones</span> : <code class="type"><a href="Go.html#TYPEcell">cell</a> -> <a href="Go.html#TYPEcell">cell</a> array array -> (int * int) list list -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">remove_dead_stones color b stones</code> removes stones with 0 liberties of color
+   <code class="code">color</code> in a given board <code class="code">b</code>. Returns the number of stones removed.</p>
+</div>
+</div>
+
+<pre><span id="VALrestore_stars"><span class="keyword">val</span> restore_stars</span> : <code class="type"><a href="Go.html#TYPEcell">cell</a> array array -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">restore_stars b</code> mutates <code class="code">b</code>, restoring the star positions if they are
+   <code class="code">Empty</code></p>
+</div>
+</div>
+
+<pre><span id="VALupdate_error"><span class="keyword">val</span> update_error</span> : <code class="type"><a href="Go.html#TYPEt">t</a> -> int -> string -> <a href="Go.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">update_error t p_id e</code> returns the game state <code class="code">t</code>, but with an added
+   error message for the player <code class="code">p_id</code></p>
+</div>
+</div>
+
+<pre><span id="VALscore"><span class="keyword">val</span> score</span> : <code class="type"><a href="Go.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">score t</code> returns a string containing the score of white and black in a given
+   game t. Territory scoring is used. A color owns a territory if through any possible
+   adjacent path of empty cells, only one color can be reached. The score is then the
+   sum of a colors prisoners and the number of empty cells in their territories.</p>
+</div>
+</div>
+
+<pre><span id="VALnext_state"><span class="keyword">val</span> next_state</span> : <code class="type"><a href="Go.html#TYPEt">t</a> -> int -> <a href="Go.html#TYPEcommand">command</a> -> <a href="Go.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">next_state t p_id command</code> returns the state of the game after
+   <code class="code">p_id</code> tries to play <code class="code">command</code>. If <code class="code">command</code> is <code class="code">Invalid</code> or it is not that
+   player's turn, only error messages are updated. If the command is <code class="code">Pass</code>, that
+   player's turn is skipped. If the command is <code class="code">Place (y,x)</code>, a stone of the players
+   color is then placed at the corresponding cell if it is empty or star. Then,
+   dead stones of the opponent are removed, followed by dead stones of the player.
+   If both players pass in a row then the game is scored and ends.</p>
+</div>
+</div>
+</body></html>

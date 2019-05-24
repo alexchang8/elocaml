@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Command.html">
+<link rel="next" href="Chat.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Authors" rel="Chapter" href="Authors.html">
+<link title="Command" rel="Chapter" href="Command.html">
+<link title="Player" rel="Chapter" href="Player.html">
+<link title="Chat" rel="Chapter" href="Chat.html">
+<link title="Client" rel="Chapter" href="Client.html">
+<link title="Gui" rel="Chapter" href="Gui.html">
+<link title="Integrated_server" rel="Chapter" href="Integrated_server.html">
+<link title="Lobbyview" rel="Chapter" href="Lobbyview.html">
+<link title="Server" rel="Chapter" href="Server.html">
+<link title="Tools" rel="Chapter" href="Tools.html">
+<link title="User" rel="Chapter" href="User.html"><title>Player</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Command.html" title="Command">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Chat.html" title="Chat">Next</a>
+</div>
+<h1>Module <a href="type_Player.html">Player</a></h1>
+
+<pre><span id="MODULEPlayer"><span class="keyword">module</span> Player</span>: <code class="code">sig</code> <a href="Player.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>The module that holds logic for a single player in battleship</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><code><span id="TYPEcell"><span class="keyword">type</span> <code class="type"></code>cell</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.Empty"><span class="constructor">Empty</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.Ship"><span class="constructor">Ship</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.Miss"><span class="constructor">Miss</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.Hit"><span class="constructor">Hit</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcell.Sunk"><span class="constructor">Sunk</span></span></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+
+
+<pre><span id="TYPEplayer"><span class="keyword">type</span> <code class="type"></code>player</span> </pre>
+
+
+<pre><span id="TYPEship"><span class="keyword">type</span> <code class="type"></code>ship</span> </pre>
+
+
+<pre><span id="TYPEcoord"><span class="keyword">type</span> <code class="type"></code>coord</span> </pre>
+
+
+<pre><span id="TYPEboard"><span class="keyword">type</span> <code class="type"></code>board</span> = <code class="type"><a href="Player.html#TYPEcell">cell</a> list list</code> </pre>
+
+
+<pre><code><span id="TYPEvalid_board"><span class="keyword">type</span> <code class="type"></code>valid_board</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvalid_board.ValidB"><span class="constructor">ValidB</span></span> <span class="keyword">of</span> <code class="type"><a href="Player.html#TYPEt">t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvalid_board.InvalidB"><span class="constructor">InvalidB</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEgame_over"><span class="keyword">type</span> <code class="type"></code>game_over</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTgame_over.Continue"><span class="constructor">Continue</span></span> <span class="keyword">of</span> <code class="type"><a href="Player.html#TYPEt">t</a> * string</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTgame_over.Loss"><span class="constructor">Loss</span></span> <span class="keyword">of</span> <code class="type">string</code></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="VALprint_my_board"><span class="keyword">val</span> print_my_board</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_my_board t</code> returns a string corresponding to a complete view
+   of <code class="code">t</code>'s board</p>
+</div>
+</div>
+
+<pre><span id="VALprint_opp_board"><span class="keyword">val</span> print_opp_board</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">print_my_board t</code> returns a string corresponding to a view of <code class="code">t</code>'s board
+   without ships</p>
+</div>
+</div>
+
+<pre><span id="VALalready_guessed"><span class="keyword">val</span> already_guessed</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> int * int -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">already_guessed board (c1, c2)</code> is the function that determines if cell
+    <code class="code">(c1, c2)</code> has previously been guessed by a user. A cell has not been
+    guessed if its value is Empty or a Ship.</p>
+</div>
+</div>
+
+<pre><span id="VALinit_player"><span class="keyword">val</span> init_player</span> : <code class="type">int -> int -> int -> <a href="Player.html#TYPEt">t</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">init_player x y name</code> initializes an new player containing an empty board
+    of size (<code class="code">x</code>, <code class="code">y</code>), an empty ship array, and the board's shape (<code class="code">x</code>, <code class="code">y</code>).</p>
+</div>
+</div>
+
+<pre><span id="VALinsert_ship"><span class="keyword">val</span> insert_ship</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> <a href="Player.html#TYPEcoord">coord</a> -> <a href="Player.html#TYPEcoord">coord</a> -> int -> <a href="Player.html#TYPEvalid_board">valid_board</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">insert_ship player start_cord end_cord size</code> inserts a ship given the
+    starting and ending coordinates of the ship (<code class="code">start_cord</code> and <code class="code">end_cord</code>)
+    to the current players board and returns an updated player. If the <code class="code">size</code>
+    does not match the number of coordinates of the ship, then an InavlidB
+    is returned.</p>
+</div>
+</div>
+
+<pre><span id="VALcheck"><span class="keyword">val</span> check</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> int * int -> <a href="Player.html#TYPEgame_over">game_over</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check p (c1, c2)</code> returns the new player with the coordinate (c1, c2)
+    updated to represent the player's guess and the current player <code class="code">p</code>.
+    Requires: Cell (c1, c2) has not previously been guessed
+    Returns the option of continue or loss</p>
+</div>
+</div>
+
+<pre><span id="VALmake_coord"><span class="keyword">val</span> make_coord</span> : <code class="type">int * int -> <a href="Player.html#TYPEcoord">coord</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">make_coord (a,b)</code> boxes the coordinate (a,b) into a coord of the same
+    coordinates.</p>
+</div>
+</div>
+
+<pre><span id="VALget_name"><span class="keyword">val</span> get_name</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_name p</code> returns the name of the current player <code class="code">p</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALget_ships"><span class="keyword">val</span> get_ships</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> <a href="Player.html#TYPEship">ship</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_ships p</code> returns the ships of the current player <code class="code">p</code>.</p>
+</div>
+</div>
+
+<pre><span id="VALget_shape"><span class="keyword">val</span> get_shape</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> int * int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_shape p</code> returns the shape of the current player's <code class="code">p</code> board.</p>
+</div>
+</div>
+
+<pre><span id="VALget_board"><span class="keyword">val</span> get_board</span> : <code class="type"><a href="Player.html#TYPEt">t</a> -> <a href="Player.html#TYPEboard">board</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_board p</code> returns the board of the current player <code class="code">p</code>.</p>
+
+<p>exception thrown when a player tries to place a diagonal ship</p>
+</div>
+</div>
+
+<pre><span id="EXCEPTIONDiagonal_Ship"><span class="keyword">exception</span> Diagonal_Ship</span></pre>
+<div class="info ">
+<div class="info-desc">
+<p>exception thrown when a player tries to check something out of bounds</p>
+</div>
+</div>
+
+<pre><span id="EXCEPTIONOut_of_Bounds"><span class="keyword">exception</span> Out_of_Bounds</span></pre>
+<div class="info ">
+<div class="info-desc">
+<p>exception thrown when a player tries to place a ship on top of another ship</p>
+</div>
+</div>
+
+<pre><span id="EXCEPTIONInvalid_Placement"><span class="keyword">exception</span> Invalid_Placement</span></pre>
+<div class="info ">
+<div class="info-desc">
+<p>exception thrown when a player plays a ship of the wrong size</p>
+</div>
+</div>
+
+<pre><span id="EXCEPTIONInva_Order"><span class="keyword">exception</span> Inva_Order</span></pre>
+</body></html>
