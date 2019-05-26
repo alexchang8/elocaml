@@ -22,7 +22,10 @@ The client will then prompt for an ip and port.
 This project depends only on the Unix, Str, and YoJson modules.
 
 ## Documentation
-Documentation was generated with ocamldoc.
+Documentation was generated with ocamldoc and is available online:
 [Public documentation (types and functions exposed through .mli)](https://alexchang8.github.io/elocaml/doc.public/index.html)
+
 [Private documentation (all functions and types)](https://alexchang8.github.io/elocaml/doc.public/index.html)
 
+## Testing
+Go, Battleship, and User (account creation/login, etc.) were extensively unit tested. To run the test suite, run `make test`
